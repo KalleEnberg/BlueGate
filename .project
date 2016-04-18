@@ -3,6 +3,7 @@
 	<name>BlueGate</name>
 	<comment></comment>
 	<projects>
+		<project>bluepy</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
