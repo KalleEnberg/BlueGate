@@ -13,6 +13,13 @@ class SensorPopulation:
         """Deletes specified members by creating a new list without them"""
         newmembers = []
         for member in self.members:
-            lambda member: newmembers.append(member) if member not in memberstodelete else None
+            if member not in memberstodelete:
+                newmembers.append(member)
         self.members = newmembers
         return True
+    
+#s = SensorPopulation("test")
+#s.members.extend([1,2,3,4,5])
+#print(s.members)
+#s.deleteMembers([2,4])
+#print(s.members)    

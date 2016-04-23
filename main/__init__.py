@@ -2,7 +2,7 @@
 #imports
 import socket
 import mysql.connector
-from . import SensorPopulation
+from main.SensorPopulation import SensorPopulation
 from bluepymaster.bluepy.btle import Scanner
 class Gateway:
     """Main class for communication between user program and the system""" 
@@ -64,7 +64,9 @@ class Gateway:
         Parameters:
         popid -- the population ID""" #eller?
         values = self.listPopulation(popid)
-        return lambda values: values if not values else SensorPopulation(popid,values)
+        if values:
+            return SensorPopulation(popid,values)
+        return False
     def addPopulation(self,popid):
         """adds a SensorPopulation to the database
                             
@@ -98,5 +100,5 @@ class Gateway:
         return None
 
 #g = Gateway("atlas.dsv.su.se",3306,"db_15482139","usr_15482139","482139")
-#print(g.getDB())
+#print(g.getPopulation("strawberry"))
 #g.dbconnection.close()
