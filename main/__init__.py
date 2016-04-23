@@ -2,6 +2,7 @@
 #imports
 import socket
 import mysql.connector
+from . import SensorPopulation
 from bluepymaster.bluepy.btle import Scanner
 class Gateway:
     """Main class for communication between user program and the system""" 
@@ -61,13 +62,9 @@ class Gateway:
         """returns a SensorPopulation object
                             
         Parameters:
-        popid -- the population ID""" #eller? ska enligt klassdiagram returnera void, vad skiljer denna mot listpopulation?
+        popid -- the population ID""" #eller?
         values = self.listPopulation(popid)
-        if not values:
-            return values
-        else:
-            #return SensorPopulation(popid,values)
-            return values
+        return lambda values: values if not values else SensorPopulation(popid,values)
     def addPopulation(self,popid):
         """adds a SensorPopulation to the database
                             
@@ -77,8 +74,6 @@ class Gateway:
             c = self.dbconnection.cursor()
             c.execute("CREATE TABLE " + popid + " (mac_address VARCHAR(20))")
             return True
-        #else:         
-            #return False
         return False
     def getDB(self):
         """returns a string identifying current database"""
