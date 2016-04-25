@@ -13,7 +13,7 @@ class Gateway:
         dbid -- the database ID (default None)
         """
         self.ip = socket.gethostbyname(socket.gethostname())
-        #self.mac = getMacAdress() Ska vi strunta i denna? är klurig att ta fram kan diskuteras på fredag
+        #self.mac = getMacAdress() Ska vi strunta i denna? är klurig att ta fram kan diskuteras på fredag t
         (self.dbhost,self.dbport,self.dbname,self.dbuser,self.dbpassword) = (dbhost,dbport,dbname,dbuser,dbpassword)
         self.dbconnection = self.connectToDB()
     def getIP(self): #verkar inte ha betydelse inom lokal fil (attribut direkt åtkomliga), har den betydelse för anrop från andra filer?
