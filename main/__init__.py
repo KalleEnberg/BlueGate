@@ -4,8 +4,6 @@ import socket
 import mysql.connector
 from main.SensorPopulation import SensorPopulation
 from bluepymaster.bluepy.btle import Scanner
-response = True
-responseNumber = 0
 class Gateway:
     """Main class for communication between user program and the system""" 
     def __init__(self,dbhost=None,dbport=None,dbname=None,dbuser=None,dbpassword=None):
@@ -101,7 +99,8 @@ class Gateway:
         
         return None
 
-
+response = True
+responseNumber = 0
 while response:
     print ("""
     1. Lagg in stuff
