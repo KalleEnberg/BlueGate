@@ -5,7 +5,7 @@ import mysql.connector
 from bluepymaster.bluepy.btle import Scanner,Peripheral
 class Gateway:
     """Main class for communication between user program and the system""" 
-    def __init__(self,dbhost=None,dbport=None,dbname=None,dbuser=None,dbpassword=None):
+    def __init__(self):
         """Constructor that initializes the class attributes
             
         Parameters:
@@ -13,7 +13,6 @@ class Gateway:
         """
         self.ip = socket.gethostbyname(socket.gethostname())
         #self.mac = getMacAdress() Ska vi strunta i denna? är klurig att ta fram kan diskuteras på fredag t
-        (self.dbhost,self.dbport,self.dbname,self.dbuser,self.dbpassword) = (dbhost,dbport,dbname,dbuser,dbpassword)
         self.dbconnection = self.connectToDB()
     def getIP(self): #verkar inte ha betydelse inom lokal fil (attribut direkt åtkomliga), har den betydelse för anrop från andra filer?
         """Returns the device IP"""
@@ -80,11 +79,15 @@ class Gateway:
         """returns a string identifying current database"""
         return self.dbhost + ":" +  self.dbname
     def connectToDB(self):
-        """returns database connection if sucessfully established, else raises exception"""
-        conn = mysql.connector.connect(user=self.dbuser, password=self.dbpassword,
+        """returns database connection if sucessfully established, else raises exception
+        
+        Modify values in this method with your database information"""
+        self.dbhost = "atlas.dsv.su.se"
+        self.dbport = 3306
+        conn = mysql.connector.connect(user="usr_15482139", password="482139",
                               host=self.dbhost,
                               port=self.dbport,
-                              database=self.dbname)
+                              database="db_15482139")
         return conn
     def updatePopulation(self,data,popid): #se diskussion i planering
         """returns true if data was sucessfully sent to population
@@ -119,21 +122,26 @@ class SensorPopulation:
         self.members = newmembers
         return True
     
+g = Gateway()
 response = True
 responseNumber = 0
 while response:
-    print ("""
-    1. Lagg in stuff
-    2. Lagg in stuff
-    3. Lagg in stuff
-    4. Lagg in stuff
-    5. Lagg in stuff
-    6. Lagg in stuff
-    7. Lagg in stuff
-    8. Lagg in stuff
-    9. Lagg in stuff
-    10. Quit""")
-    responseNumber=input("What would you like to do")
+    print ("""Welcome to BlueGate! choose an action:
+
+    1. Verify database connection
+    2. List all populations
+    3. List a population
+    4. Add a new population
+    5. Delete a population
+    6. Delete multiple populations
+    7. Start a BLE scan
+    8. Show scan results
+    9. Add a device to a population
+    10. Add all devices from scan to a population
+    11. Send data to a member of a population
+    12. Send data to all members of a population
+    13. Quit\n""")
+    responseNumber=input("Enter action number:")
     if responseNumber=="1" :
         print ("hubba bubba")
     elif responseNumber=="2" :
@@ -152,8 +160,8 @@ while response:
         print ("hubba bubba8")
     elif responseNumber=="9" :
         print ("hubba bubba9")
-    elif responseNumber=="10" :
+    elif responseNumber=="13" :
         print ("Bye")
-#g = Gateway("atlas.dsv.su.se",3306,"db_15482139","usr_15482139","482139")
-#print(g.getPopulation("strawberry"))
-#g.dbconnection.close()
+        response = False
+if g.dbconnection:
+    g.dbconnection.close()
