@@ -2,8 +2,7 @@
 #imports
 import socket
 import mysql.connector
-from main.SensorPopulation import SensorPopulation
-from bluepymaster.bluepy.btle import Scanner
+from bluepymaster.bluepy.btle import Scanner,Peripheral
 class Gateway:
     """Main class for communication between user program and the system""" 
     def __init__(self,dbhost=None,dbport=None,dbname=None,dbuser=None,dbpassword=None):
@@ -94,11 +93,32 @@ class Gateway:
         data -- the data to send
         popid -- the population ID"""
         targetpop = self.getPopulation(popid)
-        #for p in targetpop.getMembers():
-            #p.connect()
-        
-        return None
-
+        ibeacon = str.split(":")
+        (uuid,major,minor) = (ibeacon[0],ibeacon[1],ibeacon[2])
+        for p in targetpop.getMembers():
+            p.writeCharacteristic(0x01,uuid) #withresponse om detta skapar major interference
+            p.writeCharacteristic(0x02,major)
+            p.writeCharacteristic(0x03,minor)
+        return True
+    
+class SensorPopulation:
+    """Class to represent a population of sensors"""
+    def __init__(self,popid,values=None):
+        """Constructor that creates the population with the given ID, and if supplied also with members from values"""
+        self.popid = popid
+        self.members = []
+        if(values):
+            for row in values:
+                self.members.append(Peripheral(row[1]))
+    def deleteMembers(self,memberstodelete):
+        """Deletes specified members by creating a new list without them"""
+        newmembers = []
+        for member in self.members:
+            if member not in memberstodelete:
+                newmembers.append(member)
+        self.members = newmembers
+        return True
+    
 response = True
 responseNumber = 0
 while response:
