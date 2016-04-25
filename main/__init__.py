@@ -3,6 +3,7 @@
 import socket
 import mysql.connector
 from bluepymaster.bluepy.btle import Scanner,Peripheral
+from mysql.connector.errors import ProgrammingError
 class Gateway:
     """Main class for communication between user program and the system""" 
     def __init__(self):
@@ -13,6 +14,7 @@ class Gateway:
         """
         self.ip = socket.gethostbyname(socket.gethostname())
         #self.mac = getMacAdress() Ska vi strunta i denna? är klurig att ta fram kan diskuteras på fredag t
+        self.scanner = Scanner()
         self.dbconnection = self.connectToDB()
     def getIP(self): #verkar inte ha betydelse inom lokal fil (attribut direkt åtkomliga), har den betydelse för anrop från andra filer?
         """Returns the device IP"""
@@ -31,11 +33,10 @@ class Gateway:
                     
         Parameters:
         popid -- the population ID"""
-        if(self.dbconnection):
-            c = self.dbconnection.cursor()
-            c.execute("SELECT * FROM " + popid)
-            return c.fetchall()
-        return False
+
+        c = self.dbconnection.cursor()
+        c.execute("SELECT * FROM " + popid)
+        return c.fetchall()
     def listPopulations(self):
         """returns a list of SensorPopulation ID:s"""
         if(self.dbconnection):
@@ -51,11 +52,9 @@ class Gateway:
                             
         Parameters:
         popid -- the population ID"""
-        if(self.dbconnection):
-            c = self.dbconnection.cursor()
-            c.execute("DROP TABLE IF EXISTS " + popid)
-            return True
-        return False
+        c = self.dbconnection.cursor()
+        c.execute("DROP TABLE IF EXISTS " + popid)
+        return True
     def getPopulation(self,popid):
         """returns a SensorPopulation object
                             
@@ -72,7 +71,8 @@ class Gateway:
         popid -- the population ID"""
         if(self.dbconnection):
             c = self.dbconnection.cursor()
-            c.execute("CREATE TABLE " + popid + " (mac_address VARCHAR(20))")
+            c.execute("CREATE TABLE " + popid + " (mac_address VARCHAR(20))")#eller annat värde kanske? ser lite bugg ut just nu
+            self.dbconnection.commit()
             return True
         return False
     def getDB(self):
@@ -83,10 +83,10 @@ class Gateway:
         
         Modify values in this method with your database information"""
         self.dbhost = "atlas.dsv.su.se"
-        self.dbport = 3306
+        self.dbname =  "db_15482139"
         conn = mysql.connector.connect(user="usr_15482139", password="482139",
                               host=self.dbhost,
-                              port=self.dbport,
+                              port=3306,
                               database="db_15482139")
         return conn
     def updatePopulation(self,data,popid): #se diskussion i planering
@@ -96,7 +96,7 @@ class Gateway:
         data -- the data to send
         popid -- the population ID"""
         targetpop = self.getPopulation(popid)
-        ibeacon = str.split(":")
+        ibeacon = data.split(":")
         (uuid,major,minor) = (ibeacon[0],ibeacon[1],ibeacon[2])
         for p in targetpop.getMembers():
             p.writeCharacteristic(0x01,uuid) #withresponse om detta skapar major interference
@@ -113,7 +113,7 @@ class SensorPopulation:
         if(values):
             for row in values:
                 self.members.append(Peripheral(row[1]))
-    def deleteMembers(self,memberstodelete):
+    def deleteMembers(self,memberstodelete): #helt onödig och kommer aldrig att användas
         """Deletes specified members by creating a new list without them"""
         newmembers = []
         for member in self.members:
@@ -132,36 +132,126 @@ while response:
     2. List all populations
     3. List a population
     4. Add a new population
-    5. Delete a population
-    6. Delete multiple populations
-    7. Start a BLE scan
-    8. Show scan results
-    9. Add a device to a population
-    10. Add all devices from scan to a population
-    11. Send data to a member of a population
-    12. Send data to all members of a population
-    13. Quit\n""")
+    5. Add multiple populations
+    6. Delete a population
+    7. Delete multiple populations
+    8. Start a BLE scan
+    9. Show scan results
+    10. Add a device to a population
+    11. Add all devices from last scan to a population
+    12. Remove a device from a population
+    13. Remove multiple devices from a population
+    14. Send data to a device
+    15. Send data to all members of a population
+    16. Quit\n""")
     responseNumber=input("Enter action number:")
     if responseNumber=="1" :
-        print ("hubba bubba")
+        print("Connected to " + g.getDB())
     elif responseNumber=="2" :
-        print ("hubba bubba2")
+        print("Populations:")
+        for popid in g.listPopulations():
+            print(popid)
     elif responseNumber=="3" :
-        print ("hubba bubba3")
+            popid = input("Enter population ID:")
+            print("Devices in " + popid + ":")
+            try:
+                for device in g.listPopulation(popid):
+                    print(device[0])
+            except ProgrammingError:
+                print("Could not find specified population, please check the ID")
     elif responseNumber=="4" :
-        print ("hubba bubba4")
+        popid = input("Enter population ID:")
+        g.addPopulation(popid)
+        print("Added " + popid + " to database")
     elif responseNumber=="5" :
-        print ("hubba bubba5")
+        popid = input("Enter population IDs, separated by spaces:")
+        popstoadd = popid.split(" ")
+        for pop in popstoadd:
+            g.addPopulation(pop)
+        print("Added populations to database")
     elif responseNumber=="6" :
-        print ("hubba bubba6")
+        popid = input("Enter population ID:")
+        g.deletePopulation(popid)
+        print("Deleted " + popid + " from database")
     elif responseNumber=="7" :
-        print ("hubba bubba7")
+        popid = input("Enter population IDs, separated by spaces:")
+        popstodelete = popid.split(" ")
+        for pop in popstodelete:
+            g.deletePopulation(pop)
+        print("Deleted populations from database")
     elif responseNumber=="8" :
-        print ("hubba bubba8")
+        g.scanner.scan()
     elif responseNumber=="9" :
-        print ("hubba bubba9")
-    elif responseNumber=="13" :
-        print ("Bye")
+        print("Scan results:")
+        for dev in g.scanner.getDevices():
+            print(dev.addr)
+    elif responseNumber=="10" :
+        devicetoadd = input("Enter MAC of device to add:")
+        popid = input("Enter population ID:")
+        c = g.dbconnection.cursor()
+        try:
+            c.execute("INSERT INTO " + popid + " VALUES (" + devicetoadd + ")")
+            g.dbconnection.commit()
+            print("Inserted " + devicetoadd + " into " + popid)
+        except ProgrammingError:
+            print("Could not find specified population or MAC was not in hex, please check the ID/MAC")
+    elif responseNumber=="11" : #MÅSTE TESTAS NOGRANNT!
+        popid = input("Enter population ID:")
+        try:
+            c = g.dbconnection.cursor()
+            sql = "INSERT INTO " + popid + " VALUES "
+            for device in g.scanner.getDevices():
+                sql.append("(" + device.addr + "),")
+            c.execute(sql[:-1])
+        except ProgrammingError:
+            print("Could not find specified population, please check the ID") #ger fel med rätt ID för tomma scans, testa på RPI.
+    elif responseNumber=="12" : #DELETES BUGGAR GÄRNET (tabell låst?) försök fixa imorgon
+        popid = input("Enter population ID:")
+        devicetoremove = input("Enter MAC of device to remove:")
+        #try:
+        #c = g.dbconnection.cursor()
+        #c.execute("set autocommit = 1")
+        #query = "DELETE FROM beacons WHERE mac_address LIKE %s"
+        #c.execute(query,(devicetoremove,))
+        #print("if you see this, you won!")
+        #c.execute("SHOW TABLE STATUS <final2>")
+        #g.dbconnection.commit()
+        # + devicetoremove)
+        #print("Deleted " + devicetoadd + " from " + popid)
+        #except ProgrammingError:
+        #   print("Could not find specified population or MAC, please check the ID/MAC")
+    elif responseNumber=="13" : #DELETES BUGGAR GÄRNET (tabell låst?) försök fixa imorgon
+        popid = input("Enter population ID:")
+        #devicelist = input("Enter MAC-adresses of devices to remove, separated by a space:").split(" ")
+        #try:
+         #   c = g.dbconnection.cursor()
+         #   sql = "DELETE FROM " + popid + " WHERE mac_address IN ("
+          #  for device in devicelist:
+        #        sql.append(device.addr + ",")
+        #    c.execute(sql[:-1].append(")"))
+       # except ProgrammingError:
+         #   print("Could not find specified population, please check the ID")
+    elif responseNumber=="14" :
+        #try:
+        device = Peripheral(input("Enter MAC of device to send to:"))
+        ibeacon = input("Enter data to send (in hex), on the form UUID:major:minor :").split(":")
+        (uuid,major,minor) = (ibeacon[0],ibeacon[1],ibeacon[2])
+        device.writeCharacteristic(0x01, uuid)
+        device.writeCharacteristic(0x02, major)
+        device.writeCharacteristic(0x03, minor)
+        #except : #kolla vad det blir för exceptions
+        print("Data sent!")
+    elif responseNumber=="15" :
+        popid = input("Enter population ID:")
+        ibeacon = input("Enter data to send (in hex), on the form UUID:major:minor :")
+        try:
+            g.updatePopulation(ibeacon, popid)
+        except ProgrammingError:
+            print("Could not find specified population, please check the ID")
+        print("Population updated!")
+    elif responseNumber=="16" :
+        print ("Bye!")
         response = False
 if g.dbconnection:
+    g.dbconnection.commit()
     g.dbconnection.close()
