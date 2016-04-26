@@ -101,7 +101,7 @@ class SensorPopulation:
         self.members = []
         if(values):
             for row in values:
-                self.members.append(Peripheral(row[1]),ADDR_TYPE_RANDOM)
+                self.members.append(Peripheral(row[1],ADDR_TYPE_RANDOM))
     
 g = Gateway()
 response = True
