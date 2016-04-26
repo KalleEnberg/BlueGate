@@ -85,11 +85,12 @@ class Gateway:
         popid -- the population ID"""
         targetpop = self.getPopulation(popid)
         ibeacon = data.split(":")
-        (uuid,major,minor) = (ibeacon[0],ibeacon[1],ibeacon[2])
+        (uuid,major,minor) = (str.encode(ibeacon[0]),str.encode(ibeacon[1]),str.encode(ibeacon[2]))
         for p in targetpop.getMembers():
-            p.writeCharacteristic(0x01,uuid) #withresponse om detta skapar major interference
-            p.writeCharacteristic(0x02,major)
-            p.writeCharacteristic(0x03,minor)
+            p.writeCharacteristic(32,uuid) #withresponse om detta skapar major interference
+            p.writeCharacteristic(34,major)
+            p.writeCharacteristic(36,minor)
+            p.writeCharacteristic(50,str.encode("1234abcd"))
         return True
     
 class SensorPopulation:
@@ -223,10 +224,11 @@ while response:
         #try:
         device = Peripheral(input("Enter MAC of device to send to:"),ADDR_TYPE_RANDOM)
         ibeacon = input("Enter data to send (in hex), on the form UUID:major:minor :").split(":")
-        (uuid,major,minor) = (ibeacon[0],ibeacon[1],ibeacon[2])
-        device.writeCharacteristic(0x01, uuid)
-        device.writeCharacteristic(0x02, major)
-        device.writeCharacteristic(0x03, minor)
+        (uuid,major,minor) = (str.encode(ibeacon[0]),str.encode(ibeacon[1]),str.encode(ibeacon[2]))
+        device.writeCharacteristic(32, uuid)
+        device.writeCharacteristic(34, major)
+        device.writeCharacteristic(36, minor)
+        device.writeCharacteristic(50,str.encode("1234abcd"))
         #except :
         print("Data sent!")
     elif responseNumber=="15" :
