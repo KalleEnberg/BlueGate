@@ -193,6 +193,7 @@ while response:
                 sql += "('" + device.addr + "'),"
             c.execute(sql[:-1])
             g.dbconnection.commit()
+            #MESSAGE!
         except ProgrammingError:
             print("Could not find specified population, please check the ID")
     elif responseNumber=="12" :
@@ -211,7 +212,7 @@ while response:
         try:
             c = g.dbconnection.cursor()
             sql = "DELETE FROM " + popid + " WHERE mac_address IN ("
-            for device in devicelist.split(" "):
+            for device in devicelist:
                 sql+="'" + device + "'" + ","
                 c.execute(sql[:-1] + ")")
                 g.dbconnection.commit()
