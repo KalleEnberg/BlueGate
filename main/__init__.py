@@ -100,7 +100,7 @@ class SensorPopulation:
         self.members = []
         if(values):
             for row in values:
-                self.members.append(Peripheral(row[1]))
+                self.members.append(Peripheral(row[1]),ADDR_TYPE_RANDOM)
     
 g = Gateway()
 response = True
@@ -216,12 +216,12 @@ while response:
                 sql+="'" + device + "'" + ","
                 c.execute(sql[:-1] + ")")
                 g.dbconnection.commit()
-                print("Deleted devices from " + popid)
+            print("Deleted devices from " + popid)
         except ProgrammingError:
             print("Could not find specified population, please check the ID")
     elif responseNumber=="14" :
         #try:
-        device = Peripheral(input("Enter MAC of device to send to:"))
+        device = Peripheral(input("Enter MAC of device to send to:"),ADDR_TYPE_RANDOM)
         ibeacon = input("Enter data to send (in hex), on the form UUID:major:minor :").split(":")
         (uuid,major,minor) = (ibeacon[0],ibeacon[1],ibeacon[2])
         device.writeCharacteristic(0x01, uuid)
