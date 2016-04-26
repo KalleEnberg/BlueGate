@@ -54,6 +54,7 @@ class Gateway:
         popid -- the population ID"""
         c = self.dbconnection.cursor()
         c.execute("DROP TABLE IF EXISTS " + popid)
+        self.dbconnection.commit()
         return True
     def getPopulation(self,popid):
         """returns a SensorPopulation object
@@ -87,7 +88,7 @@ class Gateway:
         conn = mysql.connector.connect(user="usr_15482139", password="482139",
                               host=self.dbhost,
                               port=3306,
-                              database="db_15482139")
+                              database=self.dbname)
         return conn
     def updatePopulation(self,data,popid): #se diskussion i planering
         """returns true if data was sucessfully sent to population
@@ -203,34 +204,33 @@ while response:
             for device in g.scanner.getDevices():
                 sql.append("(" + device.addr + "),")
             c.execute(sql[:-1])
+            g.dbconnection.commit()
         except ProgrammingError:
             print("Could not find specified population, please check the ID") #ger fel med rätt ID för tomma scans, testa på RPI.
     elif responseNumber=="12" : #DELETES BUGGAR GÄRNET (tabell låst?) försök fixa imorgon
         popid = input("Enter population ID:")
         devicetoremove = input("Enter MAC of device to remove:")
-        #try:
-        #c = g.dbconnection.cursor()
-        #c.execute("set autocommit = 1")
-        #query = "DELETE FROM beacons WHERE mac_address LIKE %s"
-        #c.execute(query,(devicetoremove,))
-        #print("if you see this, you won!")
-        #c.execute("SHOW TABLE STATUS <final2>")
-        #g.dbconnection.commit()
-        # + devicetoremove)
-        #print("Deleted " + devicetoadd + " from " + popid)
-        #except ProgrammingError:
-        #   print("Could not find specified population or MAC, please check the ID/MAC")
-    elif responseNumber=="13" : #DELETES BUGGAR GÄRNET (tabell låst?) försök fixa imorgon
+        try:
+            c = g.dbconnection.cursor()
+            c.execute("DELETE FROM " + popid + " WHERE mac_address=%s",(devicetoremove,))
+            g.dbconnection.commit()
+            print("Deleted " + devicetoremove + " from " + popid)
+        except ProgrammingError:
+           print("Could not find specified population or MAC, please check the ID/MAC")
+    elif responseNumber=="13" :
         popid = input("Enter population ID:")
-        #devicelist = input("Enter MAC-adresses of devices to remove, separated by a space:").split(" ")
-        #try:
-         #   c = g.dbconnection.cursor()
-         #   sql = "DELETE FROM " + popid + " WHERE mac_address IN ("
-          #  for device in devicelist:
-        #        sql.append(device.addr + ",")
-        #    c.execute(sql[:-1].append(")"))
-       # except ProgrammingError:
-         #   print("Could not find specified population, please check the ID")
+        devicelist = input("Enter MAC-adresses of devices to remove, separated by a space:").split(" ")
+        try:
+           c = g.dbconnection.cursor()
+
+           sql = "DELETE FROM " + popid + " WHERE mac_address IN ("
+           for device in devicelist:
+                sql+= device + ","
+                c.execute(sql[:-1] + ")")
+                g.dbconnection.commit()
+                print("Deleted devices from " + popid)
+        except ProgrammingError:
+            print("Could not find specified population, please check the ID")
     elif responseNumber=="14" :
         #try:
         device = Peripheral(input("Enter MAC of device to send to:"))
@@ -253,5 +253,4 @@ while response:
         print ("Bye!")
         response = False
 if g.dbconnection:
-    g.dbconnection.commit()
     g.dbconnection.close()
