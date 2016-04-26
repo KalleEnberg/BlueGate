@@ -181,7 +181,17 @@ while response:
             g.deletePopulation(pop)
         print("Deleted populations from database")
     elif responseNumber=="8" :
-        g.scanner.scan()
+        """ Starts a Bluetooth LE scan and prints out the data found in the terminal, exactly what kind of data to be printed is subject to change"""
+        devices = g.scanner.scan()
+        for dev in devices:
+            #Simpel print som jag tycker är snygg och clean under så finns en mer utförlig med mer data
+            print ("Device address:", dev.addr, "Address type:", dev.addrType, "RSSI:", dev.rssi)
+            
+            #print (dev, dev.addr, dev.addrType, dev.rssi)
+            """Prints out some additional data like Manufacturer etc. can be a bit unnecessary"""
+            #for (adtype, desc, value) in dev.getScanData():
+                #print (adtype, desc, value)
+                
     elif responseNumber=="9" :
         print("Scan results:")
         for dev in g.scanner.getDevices():
