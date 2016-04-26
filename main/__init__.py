@@ -90,7 +90,7 @@ class Gateway:
             p.writeCharacteristic(32,uuid) #withresponse om detta skapar major interference
             p.writeCharacteristic(34,major)
             p.writeCharacteristic(36,minor)
-            p.writeCharacteristic(50,str.encode("1234abcd"))
+            p.writeCharacteristic(50,bytearray.fromhex("3132333461626364"))
         return True
     
 class SensorPopulation:
@@ -228,7 +228,7 @@ while response:
         device.writeCharacteristic(32, uuid)
         device.writeCharacteristic(34, major)
         device.writeCharacteristic(36, minor)
-        device.writeCharacteristic(50,str.encode("1234abcd"))
+        device.writeCharacteristic(50,bytearray.fromhex("3132333461626364"))
         #except :
         print("Data sent!")
     elif responseNumber=="15" :
