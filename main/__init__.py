@@ -184,7 +184,7 @@ while response:
         """ Starts a Bluetooth LE scan and prints out the data found in the terminal, exactly what kind of data to be printed is subject to change"""
         devices = g.scanner.scan()
         for dev in devices:
-            #Simpel print som jag tycker �r snygg och clean under s� finns en mer utf�rlig med mer data
+            #Simpel print som jag tycker �r snygg och clean under s� finns en mer utf�rlig med mer data
             print ("Device address:", dev.addr, "Address type:", dev.addrType, "RSSI:", dev.rssi)
             
             #print (dev, dev.addr, dev.addrType, dev.rssi)
@@ -217,7 +217,7 @@ while response:
             g.dbconnection.commit()
         except ProgrammingError:
             print("Could not find specified population, please check the ID") #ger fel med rätt ID för tomma scans, testa på RPI.
-    elif responseNumber=="12" : #DELETES BUGGAR GÄRNET (tabell låst?) försök fixa imorgon
+    elif responseNumber=="12" :
         popid = input("Enter population ID:")
         devicetoremove = input("Enter MAC of device to remove:")
         try:
