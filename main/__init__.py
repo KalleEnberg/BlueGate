@@ -2,7 +2,7 @@
 #imports
 import socket
 import mysql.connector
-from bluepymaster.bluepy.btle import Scanner,Peripheral
+from main.bluepymaster.bluepy.btle import *
 from mysql.connector.errors import ProgrammingError
 class Gateway:
     """Main class for communication between user program and the system""" 
