@@ -86,7 +86,7 @@ class Gateway:
         targetpop = self.getPopulation(popid)
         ibeacon = data.split(":")
         (uuid,major,minor) = (str.encode(ibeacon[0]),str.encode(ibeacon[1]),str.encode(ibeacon[2]))
-        for p in targetpop.getMembers():
+        for p in targetpop.members:
             p.writeCharacteristic(32,uuid) #withresponse om detta skapar major interference
             p.writeCharacteristic(34,major)
             p.writeCharacteristic(36,minor)
