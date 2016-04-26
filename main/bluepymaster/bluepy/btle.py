@@ -83,8 +83,8 @@ class UUID:
     def __eq__(self, other):
         return self.binVal == UUID(other).binVal
 
-    #def __cmp__(self, other):
-     #   return cmp(self.binVal, UUID(other).binVal)
+    def __cmp__(self, other):
+       return cmp(self.binVal, UUID(other).binVal)
 
     def __hash__(self):
         return hash(self.binVal)
@@ -213,8 +213,8 @@ class BluepyHelper:
                                             stdout=subprocess.PIPE,
                                             stderr=self._stderr,
                                             universal_newlines=True)
-          #  self._poller = select.poll()
-         #   self._poller.register(self._helper.stdout, select.POLLIN)
+            self._poller = select.poll()
+            self._poller.register(self._helper.stdout, select.POLLIN)
 
     def _stopHelper(self):
         if self._helper is not None:
@@ -311,12 +311,12 @@ class BluepyHelper:
 
 
 class Peripheral(BluepyHelper):
-    def __init__(self, deviceAddr=None, addrType=ADDR_TYPE_PUBLIC, iface=None, popID=StandardPopID):
+    def __init__(self, deviceAddr=None, addrType=ADDR_TYPE_PUBLIC, iface=None):
         BluepyHelper.__init__(self)
         self.services = {} # Indexed by UUID
         self.discoveredAllServices = False
         #Man får väl inte ha dubbla constructors i python?
-        (self.addr, self.addrType, self.iface, self.popID) = (None, None, None, None)
+        (self.addr, self.addrType, self.iface) = (None, None, None)
         
 
         if isinstance(deviceAddr, ScanEntry):
@@ -482,13 +482,7 @@ class Peripheral(BluepyHelper):
 
     def __del__(self):
         self.disconnect()
-        
-    #Set o get för vår pop ID, ta bort behövs inte i python
-    def setPopID(self, popID):
-        self.popID = popID
-        
-    def getPopID (self):
-        return self.popID
+
     
         
 
