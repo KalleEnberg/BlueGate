@@ -175,7 +175,7 @@ while response:
         for dev in g.scanner.getDevices():
             print(dev.addr)
     elif responseNumber=="10" :
-        devicetoadd = input("Enter MAC of device to add:")
+        devicetoadd = str(input("Enter MAC of device to add:"))
         popid = input("Enter population ID:")
         c = g.dbconnection.cursor()
         try:
@@ -197,7 +197,7 @@ while response:
             print("Could not find specified population, please check the ID")
     elif responseNumber=="12" :
         popid = input("Enter population ID:")
-        devicetoremove = input("Enter MAC of device to remove:")
+        devicetoremove = str(input("Enter MAC of device to remove:"))
         try:
             c = g.dbconnection.cursor()
             c.execute("DELETE FROM " + popid + " WHERE mac_address=%s",(devicetoremove,))
@@ -211,7 +211,7 @@ while response:
         try:
             c = g.dbconnection.cursor()
             sql = "DELETE FROM " + popid + " WHERE mac_address IN ("
-            for device in devicelist:
+            for device in devicelist.split(" "):
                 sql+= device + ","
                 c.execute(sql[:-1] + ")")
                 g.dbconnection.commit()
