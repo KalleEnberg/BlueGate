@@ -13,21 +13,8 @@ class Gateway:
         dbid -- the database ID (default None)
         """
         self.ip = socket.gethostbyname(socket.gethostname())
-        #self.mac = getMacAdress() Ska vi strunta i denna? är klurig att ta fram kan diskuteras på fredag t
         self.scanner = Scanner()
         self.dbconnection = self.connectToDB()
-    def getIP(self): #verkar inte ha betydelse inom lokal fil (attribut direkt åtkomliga), har den betydelse för anrop från andra filer?
-        """Returns the device IP"""
-        return self.ip
-    def getMac(self): #se diskussion i konstruktor
-        """returns the device Bluetooth mac adress"""
-        return None
-    def startScan(self):
-        """returns a Scanner object"""
-        return Scanner()
-    def listScan(self):
-        """returns a Scanner object""" #fast ska nog inte göra det...
-        return Scanner()
     def listPopulation(self,popid):
         """returns a list of tuples with values from population corresponding to given ID
                     
@@ -60,7 +47,7 @@ class Gateway:
         """returns a SensorPopulation object
                             
         Parameters:
-        popid -- the population ID""" #eller?
+        popid -- the population ID"""
         values = self.listPopulation(popid)
         if values:
             return SensorPopulation(popid,values)
@@ -72,7 +59,7 @@ class Gateway:
         popid -- the population ID"""
         if(self.dbconnection):
             c = self.dbconnection.cursor()
-            c.execute("CREATE TABLE " + popid + " (mac_address VARCHAR(20))")#eller annat värde kanske? ser lite bugg ut just nu
+            c.execute("CREATE TABLE " + popid + " (mac_address VARCHAR(20))")
             self.dbconnection.commit()
             return True
         return False
@@ -90,7 +77,7 @@ class Gateway:
                               port=3306,
                               database=self.dbname)
         return conn
-    def updatePopulation(self,data,popid): #se diskussion i planering
+    def updatePopulation(self,data,popid):
         """returns true if data was sucessfully sent to population
                             
         Parameters:
@@ -114,14 +101,6 @@ class SensorPopulation:
         if(values):
             for row in values:
                 self.members.append(Peripheral(row[1]))
-    def deleteMembers(self,memberstodelete): #helt onödig och kommer aldrig att användas
-        """Deletes specified members by creating a new list without them"""
-        newmembers = []
-        for member in self.members:
-            if member not in memberstodelete:
-                newmembers.append(member)
-        self.members = newmembers
-        return True
     
 g = Gateway()
 response = True
@@ -184,7 +163,6 @@ while response:
         """ Starts a Bluetooth LE scan and prints out the data found in the terminal, exactly what kind of data to be printed is subject to change"""
         devices = g.scanner.scan()
         for dev in devices:
-            #Simpel print som jag tycker �r snygg och clean under s� finns en mer utf�rlig med mer data
             print ("Device address:", dev.addr, "Address type:", dev.addrType, "RSSI:", dev.rssi)
             
             #print (dev, dev.addr, dev.addrType, dev.rssi)
@@ -206,7 +184,7 @@ while response:
             print("Inserted " + devicetoadd + " into " + popid)
         except ProgrammingError:
             print("Could not find specified population or MAC was not in hex, please check the ID/MAC")
-    elif responseNumber=="11" : #MÅSTE TESTAS NOGRANNT!
+    elif responseNumber=="11" :
         popid = input("Enter population ID:")
         try:
             c = g.dbconnection.cursor()
@@ -216,7 +194,7 @@ while response:
             c.execute(sql[:-1])
             g.dbconnection.commit()
         except ProgrammingError:
-            print("Could not find specified population, please check the ID") #ger fel med rätt ID för tomma scans, testa på RPI.
+            print("Could not find specified population, please check the ID")
     elif responseNumber=="12" :
         popid = input("Enter population ID:")
         devicetoremove = input("Enter MAC of device to remove:")
@@ -226,15 +204,14 @@ while response:
             g.dbconnection.commit()
             print("Deleted " + devicetoremove + " from " + popid)
         except ProgrammingError:
-           print("Could not find specified population or MAC, please check the ID/MAC")
+            print("Could not find specified population or MAC, please check the ID/MAC")
     elif responseNumber=="13" :
         popid = input("Enter population ID:")
         devicelist = input("Enter MAC-adresses of devices to remove, separated by a space:").split(" ")
         try:
-           c = g.dbconnection.cursor()
-
-           sql = "DELETE FROM " + popid + " WHERE mac_address IN ("
-           for device in devicelist:
+            c = g.dbconnection.cursor()
+            sql = "DELETE FROM " + popid + " WHERE mac_address IN ("
+            for device in devicelist:
                 sql+= device + ","
                 c.execute(sql[:-1] + ")")
                 g.dbconnection.commit()
@@ -249,7 +226,7 @@ while response:
         device.writeCharacteristic(0x01, uuid)
         device.writeCharacteristic(0x02, major)
         device.writeCharacteristic(0x03, minor)
-        #except : #kolla vad det blir för exceptions
+        #except :
         print("Data sent!")
     elif responseNumber=="15" :
         popid = input("Enter population ID:")
