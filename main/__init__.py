@@ -190,7 +190,7 @@ while response:
             c = g.dbconnection.cursor()
             sql = "INSERT INTO " + popid + " VALUES "
             for device in g.scanner.getDevices():
-                sql += "('" + device.addr + "'),")
+                sql += "('" + device.addr + "'),"
             c.execute(sql[:-1])
             g.dbconnection.commit()
         except ProgrammingError:
