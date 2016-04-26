@@ -228,7 +228,7 @@ while response:
         device.writeCharacteristic(32, uuid,True)
         device.writeCharacteristic(34, major,True)
         device.writeCharacteristic(36, minor,True)
-        device.writeCharacteristic(50,bytearray.fromhex("3132333461626364"),True)
+        device.writeCharacteristic(50,str.encode("1234abcd"),True)
         #except :
         print("Data sent!")
     elif responseNumber=="15" :
