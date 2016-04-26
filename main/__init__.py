@@ -178,19 +178,19 @@ while response:
         devicetoadd = str(input("Enter MAC of device to add:"))
         popid = input("Enter population ID:")
         c = g.dbconnection.cursor()
-        try:
-            c.execute("INSERT INTO " + popid + " VALUES (" + devicetoadd + ")")
-            g.dbconnection.commit()
-            print("Inserted " + devicetoadd + " into " + popid)
-        except ProgrammingError:
-            print("Could not find specified population or MAC was not in hex, please check the ID/MAC")
+        #try:
+        c.execute("INSERT INTO " + popid + " VALUES (%s)",(devicetoadd,))
+        g.dbconnection.commit()
+        print("Inserted " + devicetoadd + " into " + popid)
+        #except ProgrammingError:
+            #print("Could not find specified population or MAC was not in hex, please check the ID/MAC")
     elif responseNumber=="11" :
         popid = input("Enter population ID:")
         try:
             c = g.dbconnection.cursor()
             sql = "INSERT INTO " + popid + " VALUES "
             for device in g.scanner.getDevices():
-                sql.append("(" + device.addr + "),")
+                sql.append("('" + device.addr + "'),")
             c.execute(sql[:-1])
             g.dbconnection.commit()
         except ProgrammingError:
@@ -212,7 +212,7 @@ while response:
             c = g.dbconnection.cursor()
             sql = "DELETE FROM " + popid + " WHERE mac_address IN ("
             for device in devicelist.split(" "):
-                sql+= device + ","
+                sql+="'" + device + "'" + ","
                 c.execute(sql[:-1] + ")")
                 g.dbconnection.commit()
                 print("Deleted devices from " + popid)
