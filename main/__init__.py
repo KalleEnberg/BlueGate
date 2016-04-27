@@ -87,10 +87,10 @@ class Gateway:
         ibeacon = data.split(":")
         (uuid,major,minor) = (str.encode(ibeacon[0]),str.encode(ibeacon[1]),str.encode(ibeacon[2]))
         for p in targetpop.members:
-            p.writeCharacteristic(32,uuid,True) #withresponse om detta skapar major interference
-            p.writeCharacteristic(34,major,True)
-            p.writeCharacteristic(36,minor,True)
-            p.writeCharacteristic(50,bytearray.fromhex("3132333461626364"),True)
+            p.writeCharacteristic(32,uuid) #withresponse om detta skapar major interference
+            p.writeCharacteristic(34,major)
+            p.writeCharacteristic(36,minor)
+            p.writeCharacteristic(50,str.encode("1234abcd"))
         return True
     
 class SensorPopulation:
@@ -223,17 +223,17 @@ while response:
     elif responseNumber=="14" :
         #try:
         device = Peripheral(input("Enter MAC of device to send to:"),ADDR_TYPE_RANDOM)
-        #ibeacon = input("Enter data to send (in hex), on the form UUID:major:minor :").split(":")
-        #(uuid,major,minor) = str.encode(ibeacon[0]),str.encode(ibeacon[1]),str.encode(ibeacon[2])
-        #device.writeCharacteristic(32, uuid,True)
-        #device.writeCharacteristic(34, major,True)
-        #device.writeCharacteristic(36, minor,True)
-        device.writeCharacteristic(32,str.encode("3"),True)
+        ibeacon = input("Enter data to send (as UTF-8 strings), on the form UUID:major:minor :").split(":")
+        (uuid,major,minor) = str.encode(ibeacon[0]),str.encode(ibeacon[1]),str.encode(ibeacon[2])
+        device.writeCharacteristic(32, uuid)
+        device.writeCharacteristic(34, major)
+        device.writeCharacteristic(36, minor)
+        device.writeCharacteristic(50,str.encode("1234abcd"))
         #except :
         print("Data sent!")
     elif responseNumber=="15" :
         popid = input("Enter population ID:")
-        ibeacon = input("Enter data to send (in hex), on the form UUID:major:minor :")
+        ibeacon = input("Enter data to send (as UTF-8 strings), on the form UUID:major:minor :")
         try:
             g.updatePopulation(ibeacon, popid)
         except ProgrammingError:
