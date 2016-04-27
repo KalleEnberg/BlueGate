@@ -224,7 +224,7 @@ while response:
         #try:
         device = Peripheral(input("Enter MAC of device to send to:"),ADDR_TYPE_RANDOM)
         ibeacon = input("Enter data to send (in hex), on the form UUID:major:minor :").split(":")
-        (uuid,major,minor) = (str.encode(ibeacon[0]),str.encode(ibeacon[1]),str.encode(ibeacon[2]))
+        (uuid,major,minor) = str.encode(ibeacon[0]),str.encode(ibeacon[1]),str.encode(ibeacon[2])
         device.writeCharacteristic(32, uuid,True)
         device.writeCharacteristic(34, major,True)
         device.writeCharacteristic(36, minor,True)
