@@ -225,12 +225,10 @@ while response:
         device = Peripheral(input("Enter MAC of device to send to:"),ADDR_TYPE_RANDOM)
         #ibeacon = input("Enter data to send (in hex), on the form UUID:major:minor :").split(":")
         #(uuid,major,minor) = str.encode(ibeacon[0]),str.encode(ibeacon[1]),str.encode(ibeacon[2])
-        for char in device.getCharacteristics():
-            print(str(char.getHandle()) + char.propertiesToString())
         #device.writeCharacteristic(32, uuid,True)
         #device.writeCharacteristic(34, major,True)
         #device.writeCharacteristic(36, minor,True)
-        #device.writeCharacteristic(50,str.encode("1234abcd"),True)
+        device.writeCharacteristic(50,str.encode("1234abcd"),True)
         #except :
         print("Data sent!")
     elif responseNumber=="15" :
