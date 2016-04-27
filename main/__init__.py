@@ -226,7 +226,7 @@ while response:
         #ibeacon = input("Enter data to send (in hex), on the form UUID:major:minor :").split(":")
         #(uuid,major,minor) = str.encode(ibeacon[0]),str.encode(ibeacon[1]),str.encode(ibeacon[2])
         for char in device.getCharacteristics():
-            print(char.getHandle() + char.propertiesToString())
+            print(str(char.getHandle()) + char.propertiesToString())
         #device.writeCharacteristic(32, uuid,True)
         #device.writeCharacteristic(34, major,True)
         #device.writeCharacteristic(36, minor,True)
