@@ -462,7 +462,7 @@ class Peripheral(BluepyHelper):
         # Without response, a value too long for one packet will be truncated,
         # but with response, it will be sent as a queued write
         cmd = "wrr" if withResponse else "wr"
-        self._writeCmd("%s %X %s\n" % (cmd, handle, val.decode('utf-8'))) #denna ar problem?
+        self._writeCmd("%s %X %s\n" % (cmd, handle, binascii.b2a_hex(val).decode('utf-8'))) #denna ar problem?
         return self._getResp('wr')
 
     def setSecurityLevel(self, level):
