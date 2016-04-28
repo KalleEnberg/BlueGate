@@ -4,14 +4,20 @@ import socket
 import mysql.connector
 from bluepymaster.bluepy.btle import *
 from mysql.connector.errors import ProgrammingError
+
+GATEWAY_ID = "bluegate1" #change this to unique value
+"""Change below values to actual database values"""
+DB_HOST = "atlas.dsv.su.se"
+DB_PORT = 3306
+DB_NAME = "db_15482139"
+DB_USER = "usr_15482139"
+DB_PASSWORD = "482139"
+
 class Gateway:
     """Main class for communication between user program and the system""" 
     def __init__(self):
-        """Constructor that initializes the class attributes
-            
-        Parameters:
-        dbid -- the database ID (default None)
-        """
+        """Constructor that initializes the class attributes"""
+        self.id = GATEWAY_ID
         self.ip = socket.gethostbyname(socket.gethostname())
         self.scanner = Scanner()
         self.dbconnection = self.connectToDB()
@@ -22,13 +28,13 @@ class Gateway:
         popid -- the population ID"""
 
         c = self.dbconnection.cursor()
-        c.execute("SELECT * FROM %s",(popid,))
+        c.execute("SELECT * FROM " + popid)
         return c.fetchall()
     def listPopulations(self):
         """returns a list of SensorPopulation ID:s"""
         if(self.dbconnection):
             c = self.dbconnection.cursor()
-            c.execute("SELECT * FROM %s",(self.ip,))
+            c.execute("SELECT * FROM " + GATEWAY_ID)
             res = []
             for row in c.fetchall():
                 res.append(row[0])
@@ -40,7 +46,11 @@ class Gateway:
         Parameters:
         popid -- the population ID"""
         c = self.dbconnection.cursor()
-        c.execute("DROP TABLE IF EXISTS %s" (popid,))
+        c.execute("SELECT * FROM " + GATEWAY_ID + " WHERE population=%s",(popid,))
+        if c.fetchall():
+            c.execute("DELETE FROM " + GATEWAY_ID + " WHERE population=%s",(popid,)) #select for check
+            c.execute("DROP TABLE IF EXISTS " + popid)
+            print("Deleted " + popid + " from database")
         self.dbconnection.commit()
     def getPopulation(self,popid):
         """returns a SensorPopulation object
@@ -58,20 +68,20 @@ class Gateway:
         popid -- the population ID"""
         if(self.dbconnection):
             c = self.dbconnection.cursor()
-            c.execute("CREATE TABLE IF NOT EXISTS %s"(self.ip,))
+            c.execute("CREATE TABLE IF NOT EXISTS " + GATEWAY_ID + " (population VARCHAR(40))")
             self.dbconnection.commit()
-            c.execute("CREATE TABLE %s (mac_address VARCHAR(20))",(popid,))
-            c.execute("INSERT INTO %s VALUES (%s)",(self.ip,popid,))
+            c.execute("CREATE TABLE " + popid + " (mac_address VARCHAR(20))")
+            c.execute("INSERT INTO " + GATEWAY_ID + " VALUES (%s)",(popid,))
             self.dbconnection.commit()
     def connectToDB(self):
         """returns database connection if sucessfully established, else raises exception
         
         Modify values in this method with your database information"""
-        self.dbhost = "atlas.dsv.su.se"
-        self.dbname =  "db_15482139"
-        conn = mysql.connector.connect(user="usr_15482139", password="482139",
+        self.dbhost = DB_HOST
+        self.dbname =  DB_NAME
+        conn = mysql.connector.connect(user=DB_USER, password=DB_PASSWORD,
                               host=self.dbhost,
-                              port=3306,
+                              port=DB_PORT,
                               database=self.dbname)
         return conn
     def updatePopulation(self,data,popid):
@@ -151,13 +161,11 @@ while response:
     elif responseNumber=="6" :
         popid = input("Enter population ID:")
         g.deletePopulation(popid)
-        print("Deleted " + popid + " from database")
     elif responseNumber=="7" :
         popid = input("Enter population IDs, separated by spaces:")
         popstodelete = popid.split(" ")
         for pop in popstodelete:
             g.deletePopulation(pop)
-        print("Deleted populations from database")
     elif responseNumber=="8" :
         """ Starts a Bluetooth LE scan and prints out the data found in the terminal, exactly what kind of data to be printed is subject to change""" #i dont get the last part 
         devices = g.scanner.scan()
@@ -168,62 +176,62 @@ while response:
         for dev in g.scanner.getDevices():
             print(dev.addr) #prova dev.getValueText(9) for device name
     elif responseNumber=="10" :
-        devicetoadd = str(input("Enter MAC of device to add:"))
         popid = input("Enter population ID:")
+        devicetoadd = str(input("Enter MAC of device to add:"))
         c = g.dbconnection.cursor()
         #try:
-        c.execute("INSERT INTO %s VALUES (%s)",(popid,devicetoadd,))
+        c.execute("INSERT INTO " + popid + " VALUES (%s)",(devicetoadd,))
         g.dbconnection.commit()
         print("Inserted " + devicetoadd + " into " + popid)
         #except ProgrammingError:
             #print("Could not find specified population or MAC was not in hex, please check the ID/MAC")
     elif responseNumber=="11" :
-        devicestoadd = input("Enter MAC addresses of devices to add, separated by spaces:").split(" ")
+        devicestoadd = input("Enter MAC addresses of devices to add, separated by colons:").split(":")
         popid = input("Enter population ID:")
         c = g.dbconnection.cursor()
         #try:
-        sql = "INSERT INTO %s VALUES "
+        sql = "INSERT INTO "+ popid + " VALUES "
         for devicetoadd in devicestoadd:
-            sql+= "('" + device.addr + "'),"
-        c.execute(sql[:-1],(popid,))
+            sql+= "('" + devicetoadd + "'),"
+        c.execute(sql[:-1])
         g.dbconnection.commit()
         print("Inserted devices into " + popid)
         #except ProgrammingError:
     elif responseNumber=="12" :
         popid = input("Enter population ID:")
-        try:
-            c = g.dbconnection.cursor()
-            sql = "INSERT INTO %s VALUES "
-            for device in g.scanner.getDevices():
-                sql += "('" + device.addr + "'),"
-            c.execute(sql[:-1],(popid,))
-            g.dbconnection.commit()
-            print("Added devices to population")
-        except ProgrammingError:
-            print("Could not find specified population, please check the ID")
+        #try:
+        c = g.dbconnection.cursor()
+        sql = "INSERT INTO " + popid +" VALUES "
+        for device in g.scanner.getDevices():
+            sql += "('" + device.addr + "'),"
+            c.execute(sql[:-1])
+        g.dbconnection.commit()
+        print("Added devices to population")
+        #except ProgrammingError:
+            #print("Could not find specified population, please check the ID")
     elif responseNumber=="13" :
         popid = input("Enter population ID:")
         devicetoremove = str(input("Enter MAC of device to remove:"))
-        try:
-            c = g.dbconnection.cursor()
-            c.execute("DELETE FROM %s WHERE mac_address=%s",(popid,devicetoremove,))
-            g.dbconnection.commit()
-            print("Deleted " + devicetoremove + " from " + popid)
-        except ProgrammingError:
-            print("Could not find specified population or MAC, please check the ID/MAC")
+        #try:
+        c = g.dbconnection.cursor()
+        c.execute("DELETE FROM " + popid + " WHERE mac_address=%s",(devicetoremove,))
+        g.dbconnection.commit()
+        print("Deleted " + devicetoremove + " from " + popid)
+        #except ProgrammingError:
+            #print("Could not find specified population or MAC, please check the ID/MAC")
     elif responseNumber=="14" :
         popid = input("Enter population ID:")
-        devicelist = input("Enter MAC-adresses of devices to remove, separated by a space:").split(" ")
-        try:
-            c = g.dbconnection.cursor()
-            sql = "DELETE FROM %s WHERE mac_address IN ("
-            for device in devicelist:
-                sql+="'" + device + "'" + ","
-                c.execute(sql[:-1] + ")",(popid))
-                g.dbconnection.commit()
-            print("Deleted devices from " + popid)
-        except ProgrammingError:
-            print("Could not find specified population, please check the ID")
+        devicelist = input("Enter MAC-adresses of devices to remove, separated by a colon:").split(":")
+        #try:
+        c = g.dbconnection.cursor()
+        sql = "DELETE FROM " + popid +" WHERE mac_address IN ("
+        for device in devicelist:
+            sql+="'" + device + "'" + ","
+            c.execute(sql[:-1] + ")")
+            g.dbconnection.commit()
+        print("Deleted devices from " + popid)
+        #except ProgrammingError:
+            #print("Could not find specified population, please check the ID")
     elif responseNumber=="15" :
         #try:
         device = Peripheral(input("Enter MAC of device to send to:"),ADDR_TYPE_RANDOM)
@@ -238,10 +246,10 @@ while response:
     elif responseNumber=="16" :
         popid = input("Enter population ID:")
         ibeacon = input("Enter data to send (as UTF-8 strings), on the form UUID:major:minor :")
-        try:
-            g.updatePopulation(ibeacon, popid)
-        except ProgrammingError:
-            print("Could not find specified population, please check the ID")
+        #try:
+        g.updatePopulation(ibeacon, popid)
+        #except ProgrammingError:
+            #print("Could not find specified population, please check the ID")
         print("Population updated!")
     elif responseNumber=="17" :
         print ("Bye!")
