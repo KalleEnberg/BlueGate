@@ -170,11 +170,11 @@ while response:
         """ Starts a Bluetooth LE scan and prints out the data found in the terminal, exactly what kind of data to be printed is subject to change""" #i dont get the last part 
         devices = g.scanner.scan()
         for dev in devices:
-            print ("Device address:", dev.addr, "Address type:", dev.addrType, "RSSI:", dev.rssi) #prova dev.getValueText(9) for device name
+            print ("Device address:", dev.addr, "Address type:", dev.addrType, "RSSI:", dev.rssi, "Device name:", dev.getValueText(9))
     elif responseNumber=="9" :
         print("Scan results:")
         for dev in g.scanner.getDevices():
-            print(dev.addr) #prova dev.getValueText(9) for device name
+            print ("Device address:", dev.addr, "Address type:", dev.addrType, "RSSI:", dev.rssi, "Device name:", dev.getValueText(9))
     elif responseNumber=="10" :
         popid = input("Enter population ID:")
         devicetoadd = str(input("Enter MAC of device to add:"))
