@@ -1,5 +1,6 @@
 """Main program of the system, also contains gateway interface to user"""
 #imports
+from twisted.internet import reactor
 import socket
 import mysql.connector
 from bluepymaster.bluepy.btle import *
