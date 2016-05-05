@@ -72,13 +72,13 @@ class Gateway:
             c = self.dbconnection.cursor()
             c.execute("CREATE TABLE IF NOT EXISTS " + GATEWAY_ID + " (population VARCHAR(40))")
             self.dbconnection.commit()
-            c.execute("CREATE TABLE " + popid + " (mac_address VARCHAR(20))")
+            c.execute("CREATE TABLE IF NOT EXISTS " + popid + " (mac_address VARCHAR(20))")
             c.execute("INSERT INTO " + GATEWAY_ID + " VALUES (%s)",(popid,))
             self.dbconnection.commit()
     def connectToDB(self):
         """returns database connection if sucessfully established, else raises exception
         
-        Modify values in this method with your database information"""
+        Modify values in main fields with your database information"""
         self.dbhost = DB_HOST
         self.dbname =  DB_NAME
         conn = mysql.connector.connect(user=DB_USER, password=DB_PASSWORD,
@@ -111,13 +111,13 @@ class SensorPopulation:
         if(values):
             for row in values:
                 self.members.append(Peripheral(row[0],ADDR_TYPE_RANDOM))
-    
+ 
 g = Gateway()
 response = True
 responseNumber = 0
 while response:
     print ("""Welcome to BlueGate! choose an action:
-
+ 
     1. Verify database connection
     2. List all populations
     3. List a population
