@@ -39,5 +39,5 @@ class Test(unittest.TestCase):
     def test_connectToDB(self):
         self.assertTrue(g.connectToDB())
         
-if __name__ == "__main__":
+if __name__ == '__main__':
     unittest.main()

@@ -94,12 +94,12 @@ class Gateway:
         popid -- the population ID"""
         targetpop = self.getPopulation(popid)
         ibeacon = data.split(":")
-        (uuid,major,minor) = (str.encode(ibeacon[0]),str.encode(ibeacon[1]),str.encode(ibeacon[2]))
+        (uuid,major,minor) = (ibeacon[0], ibeacon[1], ibeacon[2])
         for p in targetpop.members:
             p.writeCharacteristic(32,uuid)
             p.writeCharacteristic(34,major)
             p.writeCharacteristic(36,minor)
-            p.writeCharacteristic(50,str.encode("1234abcd"))
+            p.writeCharacteristic(50,"1234abcd")
         return True
     
 class SensorPopulation:
@@ -117,7 +117,7 @@ response = True
 responseNumber = 0
 while response:
     print ("""Welcome to BlueGate! choose an action:
- 
+  
     1. Verify database connection
     2. List all populations
     3. List a population
@@ -238,11 +238,11 @@ while response:
         #try:
         device = Peripheral(raw_input("Enter MAC of device to send to:"),ADDR_TYPE_RANDOM)
         ibeacon = raw_input("Enter data to send (as UTF-8 strings), on the form UUID:major:minor :").split(":")
-        (uuid,major,minor) = str.encode(ibeacon[0]),str.encode(ibeacon[1]),str.encode(ibeacon[2])
+        (uuid,major,minor) = ibeacon[0], ibeacon[1], ibeacon[2]
         device.writeCharacteristic(32, uuid)
         device.writeCharacteristic(34, major)
         device.writeCharacteristic(36, minor)
-        device.writeCharacteristic(50,str.encode("1234abcd"))
+        device.writeCharacteristic(50, "1234abcd")
         #except :
         print("Data sent!")
     elif responseNumber=="16" :
@@ -258,3 +258,4 @@ while response:
         response = False
 if g.dbconnection:
     g.dbconnection.close()
+    
