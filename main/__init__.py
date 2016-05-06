@@ -258,4 +258,3 @@ while response:
         response = False
 if g.dbconnection:
     g.dbconnection.close()
-    
