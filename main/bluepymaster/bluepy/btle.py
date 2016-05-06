@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-#titta på poller och cmp varför error?
+
 
 from __future__ import print_function
 
