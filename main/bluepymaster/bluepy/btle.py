@@ -315,7 +315,6 @@ class Peripheral(BluepyHelper):
         BluepyHelper.__init__(self)
         self.services = {} # Indexed by UUID
         self.discoveredAllServices = False
-        #Man får väl inte ha dubbla constructors i python?
         (self.addr, self.addrType, self.iface) = (None, None, None)
         
 
