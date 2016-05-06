@@ -135,7 +135,7 @@ while response:
     15. Send data to a device
     16. Send data to all members of a population
     17. Quit\n""")
-    responseNumber=input("Enter action number:")
+    responseNumber=raw_input("Enter action number:")
     if responseNumber=="1" :
         print("Connected to " + g.dbhost + ":" +  g.dbname)
     elif responseNumber=="2" :
@@ -143,7 +143,7 @@ while response:
         for popid in g.listPopulations():
             print(popid)
     elif responseNumber=="3" :
-            popid = input("Enter population ID:")
+            popid = raw_input("Enter population ID:")
             print("Devices in " + popid + ":")
             try:
                 for device in g.listPopulationDevices(popid):
@@ -151,20 +151,20 @@ while response:
             except ProgrammingError:
                 print("Could not find specified population, please check the ID")
     elif responseNumber=="4" :
-        popid = input("Enter population ID:")
+        popid = raw_input("Enter population ID:")
         g.addPopulation(popid)
         print("Added " + popid + " to database")
     elif responseNumber=="5" :
-        popid = input("Enter population IDs, separated by spaces:")
+        popid = raw_input("Enter population IDs, separated by spaces:")
         popstoadd = popid.split(" ")
         for pop in popstoadd:
             g.addPopulation(pop)
         print("Added populations to database")
     elif responseNumber=="6" :
-        popid = input("Enter population ID:")
+        popid = raw_input("Enter population ID:")
         g.deletePopulation(popid)
     elif responseNumber=="7" :
-        popid = input("Enter population IDs, separated by spaces:")
+        popid = raw_input("Enter population IDs, separated by spaces:")
         popstodelete = popid.split(" ")
         for pop in popstodelete:
             g.deletePopulation(pop)
@@ -178,8 +178,8 @@ while response:
         for dev in g.scanner.getDevices():
             print ("Device address:", dev.addr, "Address type:", dev.addrType, "RSSI:", dev.rssi, "Device name:", dev.getValueText(9))
     elif responseNumber=="10" :
-        popid = input("Enter population ID:")
-        devicetoadd = str(input("Enter MAC of device to add:"))
+        popid = raw_input("Enter population ID:")
+        devicetoadd = str(raw_input("Enter MAC of device to add:"))
         c = g.dbconnection.cursor()
         #try:
         c.execute("INSERT INTO " + popid + " VALUES (%s)",(devicetoadd,))
@@ -188,8 +188,8 @@ while response:
         #except ProgrammingError:
             #print("Could not find specified population or MAC was not in hex, please check the ID/MAC")
     elif responseNumber=="11" :
-        devicestoadd = input("Enter MAC addresses of devices to add, separated by colons:").split(":")
-        popid = input("Enter population ID:")
+        devicestoadd = raw_input("Enter MAC addresses of devices to add, separated by colons:").split(":")
+        popid = raw_input("Enter population ID:")
         c = g.dbconnection.cursor()
         #try:
         sql = "INSERT INTO "+ popid + " VALUES "
@@ -200,7 +200,7 @@ while response:
         print("Inserted devices into " + popid)
         #except ProgrammingError:
     elif responseNumber=="12" :
-        popid = input("Enter population ID:")
+        popid = raw_input("Enter population ID:")
         #try:
         c = g.dbconnection.cursor()
         sql = "INSERT INTO " + popid +" VALUES "
@@ -212,8 +212,8 @@ while response:
         #except ProgrammingError:
             #print("Could not find specified population, please check the ID")
     elif responseNumber=="13" :
-        popid = input("Enter population ID:")
-        devicetoremove = str(input("Enter MAC of device to remove:"))
+        popid = raw_input("Enter population ID:")
+        devicetoremove = str(raw_input("Enter MAC of device to remove:"))
         #try:
         c = g.dbconnection.cursor()
         c.execute("DELETE FROM " + popid + " WHERE mac_address=%s",(devicetoremove,))
@@ -222,8 +222,8 @@ while response:
         #except ProgrammingError:
             #print("Could not find specified population or MAC, please check the ID/MAC")
     elif responseNumber=="14" :
-        popid = input("Enter population ID:")
-        devicelist = input("Enter MAC-adresses of devices to remove, separated by a colon:").split(":")
+        popid = raw_input("Enter population ID:")
+        devicelist = raw_input("Enter MAC-adresses of devices to remove, separated by a colon:").split(":")
         #try:
         c = g.dbconnection.cursor()
         sql = "DELETE FROM " + popid +" WHERE mac_address IN ("
@@ -236,8 +236,8 @@ while response:
             #print("Could not find specified population, please check the ID")
     elif responseNumber=="15" :
         #try:
-        device = Peripheral(input("Enter MAC of device to send to:"),ADDR_TYPE_RANDOM)
-        ibeacon = input("Enter data to send (as UTF-8 strings), on the form UUID:major:minor :").split(":")
+        device = Peripheral(raw_input("Enter MAC of device to send to:"),ADDR_TYPE_RANDOM)
+        ibeacon = raw_input("Enter data to send (as UTF-8 strings), on the form UUID:major:minor :").split(":")
         (uuid,major,minor) = str.encode(ibeacon[0]),str.encode(ibeacon[1]),str.encode(ibeacon[2])
         device.writeCharacteristic(32, uuid)
         device.writeCharacteristic(34, major)
@@ -246,8 +246,8 @@ while response:
         #except :
         print("Data sent!")
     elif responseNumber=="16" :
-        popid = input("Enter population ID:")
-        ibeacon = input("Enter data to send (as UTF-8 strings), on the form UUID:major:minor :")
+        popid = raw_input("Enter population ID:")
+        ibeacon = raw_input("Enter data to send (as UTF-8 strings), on the form UUID:major:minor :")
         #try:
         g.updatePopulation(ibeacon, popid)
         #except ProgrammingError:
