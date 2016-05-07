@@ -272,7 +272,7 @@ def main(arg,server,gateway):
             response = False
     if g.dbconnection:
         g.dbconnection.close()
-#log.startLogging(sys.stdout) #ta bort kommentar for loggning i nod
+log.startLogging(sys.stdout) #ta bort kommentar for loggning i nod
 
 server = Server()
 server.listen(BOOTSTRAP_PORT)
