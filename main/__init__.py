@@ -238,6 +238,7 @@ def main(arg,server,gateway):
                 g.deletePopulation(pop)
         elif responseNumber=="8" :
             """ Starts a Bluetooth LE scan and prints out the data found in the terminal, exactly what kind of data to be printed is subject to change""" #i dont get the last part 
+            print("Scanning for devices (10 sec)...")
             devices = g.scanner.scan()
             for dev in devices:
                 print ("Device address:", dev.addr, "Address type:", dev.addrType, "RSSI:", dev.rssi, "Device name:", dev.getValueText(9))
