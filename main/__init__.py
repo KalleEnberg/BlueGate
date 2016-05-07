@@ -151,7 +151,7 @@ def main(arg,server,gateway):
         responseNumber=raw_input("Enter action number:")
         if responseNumber=="1" :
             print("Connected to database: " + g.dbhost + ":" +  g.dbname)
-            print("Connected to bootstrap server: " + g.bootstrap_ip + ":" + g.bootstrap_port)
+            print("Connected to bootstrap server: " + g.bootstrap_ip + ":" + str(g.bootstrap_port))
         elif responseNumber=="2" :
             print("Populations:")
             for popid in g.listPopulations():
