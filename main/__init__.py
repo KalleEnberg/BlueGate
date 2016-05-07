@@ -118,7 +118,7 @@ responseNumber = 0
 while response:
     print ("""Welcome to BlueGate! choose an action:
   
-    1. Verify database connection
+    1. Verify database and Kademlia connection
     2. List all populations
     3. List a population
     4. Add a new population
@@ -134,7 +134,14 @@ while response:
     14. Remove multiple devices from a population
     15. Send data to a device
     16. Send data to all members of a population
-    17. Quit\n""")
+    17. List all groups
+    18. List a group
+    19. Create a group of populations
+    20. Add a population to a group (populations of other BlueGates is accepted)
+    21. Delete a population from a group
+    22. Delete a group
+    23. Send data to a group
+    24. Quit\n""")
     responseNumber=raw_input("Enter action number:")
     if responseNumber=="1" :
         print("Connected to " + g.dbhost + ":" +  g.dbname)
@@ -253,7 +260,7 @@ while response:
         #except ProgrammingError:
             #print("Could not find specified population, please check the ID")
         print("Population updated!")
-    elif responseNumber=="17" :
+    elif responseNumber=="24" :
         print ("Bye!")
         response = False
 if g.dbconnection:
