@@ -47,6 +47,36 @@ class Gateway:
                 res.append(row[0])
             return res
         return []
+    def listGroups(self):
+        """returns a list of Group ID:s"""
+        if(self.dbconnection):
+            c = self.dbconnection.cursor()
+            c.execute("SELECT * FROM bluegroups")
+            res = []
+            for row in c.fetchall():
+                res.append(row[0])
+            return res
+        return []
+    def listGroup(self,groupid):
+        """returns a list of tuples (gateway ID,population ID)
+                            
+        Parameters:
+        groupid -- the group ID"""
+        c = self.dbconnection.cursor()
+        c.execute("SELECT * FROM " + groupid)
+        return c.fetchall()
+    def insertPopulation(self,groupid,gatewayid,popid):
+        c = self.dbconnection.cursor()
+        #add checks for existance of tables if time
+        c.execute("INSERT INTO " + groupid + " VALUES (%s,%s)",(gatewayid,popid,))
+        self.dbconnection.commit()
+    def removePopulation(self,groupid,gatewayid,popid):
+        c = self.dbconnection.cursor()
+        #add checks for existance of tables if time
+        c.execute("SELECT * FROM " + groupid + " WHERE gatewayid=%s AND populationid=%s",(gatewayid,popid,))
+        if c.fetchall():
+            c.execute("DELETE FROM " + groupid + " WHERE gatewayid=%s AND populationid=%s",(gatewayid,popid,))
+        self.dbconnection.commit()
     def deletePopulation(self,popid):
         """deletes a SensorPopulation object
                             
@@ -80,6 +110,30 @@ class Gateway:
             c.execute("CREATE TABLE IF NOT EXISTS " + popid + " (mac_address VARCHAR(20))")
             c.execute("INSERT INTO " + GATEWAY_ID + " VALUES (%s)",(popid,))
             self.dbconnection.commit()
+    def addGroup(self,groupid):
+        """adds a group to the database
+                            
+        Parameters:
+        groupid -- the group ID"""
+        if(self.dbconnection):
+            c = self.dbconnection.cursor()
+            c.execute("CREATE TABLE IF NOT EXISTS bluegroups (groupid VARCHAR(40))")
+            c.execute("CREATE TABLE IF NOT EXISTS " + groupid + " (gatewayid VARCHAR(40), populationid VARCHAR(40))")
+            self.dbconnection.commit()
+            c.execute("INSERT INTO bluegroups VALUES (%s)",(groupid,))
+            self.dbconnection.commit()
+    def deleteGroup(self,groupid):
+        """deletes a group from database
+                            
+        Parameters:
+        groupid -- the group ID"""
+        c = self.dbconnection.cursor()
+        c.execute("SELECT * FROM bluegroups WHERE groupid=%s",(groupid,))
+        if c.fetchall():
+            c.execute("DELETE FROM bluegroups WHERE groupid=%s",(groupid,)) #select for check
+            c.execute("DROP TABLE IF EXISTS " + groupid)
+            print("Deleted " + groupid + " from database")
+        self.dbconnection.commit()
     def connectToDB(self):
         """returns database connection if sucessfully established, else raises exception
         
@@ -267,12 +321,47 @@ def main(arg,server,gateway):
             #except ProgrammingError:
                 #print("Could not find specified population, please check the ID")
             print("Population updated!")
+        elif responseNumber=="17" :
+            print("Groups:")
+            for group in g.listGroups():
+                print(group)
+        elif responseNumber=="18" :
+            groupid = raw_input("Enter group ID:")
+            print("Populations in group:")
+            for row in g.listgroup(groupid):
+                print(row[0] + ":" + row[1])
+        elif responseNumber=="19" :
+            groupid = raw_input("Enter group ID:")
+            g.addGroup(groupid)
+            print(groupid + " was added to database")
+        elif responseNumber=="20" :
+            groupid = raw_input("Enter group ID:")
+            gatewayid = raw_input("Enter gateway ID where population exists:")
+            popid = raw_input("Enter population ID:")
+            g.insertPopulation(groupid,gatewayid,popid)
+            print(gatewayid + ":" + popid + " was inserted into " + groupid)
+        elif responseNumber=="21" :
+            groupid = raw_input("Enter group ID:")
+            gatewayid = raw_input("Enter gateway ID where population exists:")
+            popid = raw_input("Enter population ID:")
+            g.removePopulation(groupid,gatewayid,popid)
+            print(gatewayid + ":" + popid + " was deleted from " + groupid)
+        elif responseNumber=="22" :
+            groupid = raw_input("Enter group ID:")
+            g.deleteGroup(groupid)
+            print("Deleted " + groupid + " from database")
+        elif responseNumber=="23" :
+            groupid = raw_input("Enter group ID:")
+            instruction = raw_input("Instruction to send:")
+            print("Instructions sent!")
+            return server.set("hash? or commonly known value (key)",groupid + instruction).addCallback(main,server,g)
         elif responseNumber=="24" :
             print ("Bye!")
             response = False
+            reactor.stop()
     if g.dbconnection:
         g.dbconnection.close()
-log.startLogging(sys.stdout) #ta bort kommentar for loggning i nod
+#log.startLogging(sys.stdout) #ta bort kommentar for loggning i nod
 
 server = Server()
 server.listen(BOOTSTRAP_PORT)
