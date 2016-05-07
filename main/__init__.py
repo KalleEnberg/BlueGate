@@ -329,7 +329,7 @@ def main(arg,server,gateway):
         elif responseNumber=="18" :
             groupid = raw_input("Enter group ID:")
             print("Populations in group:")
-            for row in g.listgroup(groupid):
+            for row in g.listGroup(groupid):
                 print(row[0] + ":" + row[1])
         elif responseNumber=="19" :
             groupid = raw_input("Enter group ID:")
