@@ -328,7 +328,7 @@ def main(arg,server,gateway):
                 print(group)
         elif responseNumber=="18" :
             groupid = raw_input("Enter group ID:")
-            print("Populations in group:")
+            print("Populations in " + groupid + ":")
             for row in g.listGroup(groupid):
                 print(row[0] + ":" + row[1])
         elif responseNumber=="19" :
