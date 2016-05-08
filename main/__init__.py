@@ -176,7 +176,7 @@ def kademliaListener(server,gateway):
     while True:
         value = server.get("some key here")
         if(value):
-            print("")
+            pass
             #continue with more keys, or act on Gateway in regards to the instruction collected.
 
 def main(arg,server,gateway,first):
