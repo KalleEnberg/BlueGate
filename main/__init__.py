@@ -6,7 +6,7 @@ import socket
 import mysql.connector
 from bluepymaster.bluepy.btle import *
 from mysql.connector.errors import ProgrammingError
-import threading
+import thread
 
 """Change below values to correct values"""
 GATEWAY_ID = "bluegate1"
@@ -181,9 +181,7 @@ def kademliaListener(server,gateway):
 
 def main(arg,server,gateway,first):
     if first:
-        t = threading.Thread(target=kademliaListener(server, gateway))
-        t.daemon = True
-        t.start()
+        thread.start_new_thread(kademliaListener, (server,gateway))
     g = gateway
     response = True
     responseNumber = 0
