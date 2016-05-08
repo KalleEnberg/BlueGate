@@ -186,7 +186,7 @@ def main(arg,server,gateway,first):
         thread.start_new_thread(kademliaListener, (server,gateway))
     g = gateway
     responseNumber = 0
-    while not exit:
+    while not exitprogram:
         print ("""Welcome to BlueGate! choose an action:
       
         1. Verify database and Kademlia connection
