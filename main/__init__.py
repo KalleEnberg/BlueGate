@@ -8,6 +8,8 @@ from bluepymaster.bluepy.btle import *
 from mysql.connector.errors import ProgrammingError
 import thread
 
+EXIT_PROGRAM = False
+
 """Change below values to correct values"""
 GATEWAY_ID = "bluegate1"
 BOOTSTRAP_IP = "192.168.50.108"
@@ -173,7 +175,7 @@ class SensorPopulation:
                 self.members.append(Peripheral(row[0],ADDR_TYPE_RANDOM))
                 
 def kademliaListener(server,gateway):
-    while not exitprogram:
+    while not EXIT_PROGRAM:
         value = server.get("some key here")
         if(value != None):
             pass
@@ -184,7 +186,7 @@ def main(arg,server,gateway,first):
         thread.start_new_thread(kademliaListener, (server,gateway))
     g = gateway
     responseNumber = 0
-    while not exitprogram:
+    while not EXIT_PROGRAM:
         print ("""Welcome to BlueGate! choose an action:
       
         1. Verify database and Kademlia connection
@@ -367,13 +369,12 @@ def main(arg,server,gateway,first):
             return server.set("hash? or commonly known value (key)",groupid + instruction).addCallback(main,server,g)
         elif responseNumber=="24" :
             print ("Bye!")
-            exitprogram = True
+            EXIT_PROGRAM = True
             reactor.stop()
     if g.dbconnection:
         g.dbconnection.close()
 #log.startLogging(sys.stdout) #ta bort kommentar for loggning i nod
 
-exitprogram = False
 server = Server()
 server.listen(BOOTSTRAP_PORT)
 server.bootstrap([(BOOTSTRAP_IP, BOOTSTRAP_PORT)]).addCallback(main, server,Gateway(),True)
