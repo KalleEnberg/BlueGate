@@ -6,6 +6,7 @@ import socket
 import mysql.connector
 from bluepymaster.bluepy.btle import *
 from mysql.connector.errors import ProgrammingError
+import thread
 
 """Change below values to correct values"""
 GATEWAY_ID = "bluegate1"
@@ -170,8 +171,16 @@ class SensorPopulation:
         if(values):
             for row in values:
                 self.members.append(Peripheral(row[0],ADDR_TYPE_RANDOM))
- 
-def main(arg,server,gateway):
+                
+def kademliaListener(server,gateway):
+    while True:
+        value = server.get("some key here")
+        if(value):
+            #continue with more keys, or act on Gateway in regards to the instruction collected.
+
+def main(arg,server,gateway,first):
+    if first:
+        thread.start_new_thread(kademliaListener, (server,gateway))
     g = gateway
     response = True
     responseNumber = 0
@@ -366,6 +375,6 @@ def main(arg,server,gateway):
 
 server = Server()
 server.listen(BOOTSTRAP_PORT)
-server.bootstrap([(BOOTSTRAP_IP, BOOTSTRAP_PORT)]).addCallback(main, server,Gateway())
+server.bootstrap([(BOOTSTRAP_IP, BOOTSTRAP_PORT)]).addCallback(main, server,Gateway(),True)
 
 reactor.run()
