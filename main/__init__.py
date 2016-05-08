@@ -8,8 +8,6 @@ from bluepymaster.bluepy.btle import *
 from mysql.connector.errors import ProgrammingError
 import thread
 
-exitprogram = False
-
 """Change below values to correct values"""
 GATEWAY_ID = "bluegate1"
 BOOTSTRAP_IP = "192.168.50.108"
@@ -375,6 +373,7 @@ def main(arg,server,gateway,first):
         g.dbconnection.close()
 #log.startLogging(sys.stdout) #ta bort kommentar for loggning i nod
 
+exitprogram = False
 server = Server()
 server.listen(BOOTSTRAP_PORT)
 server.bootstrap([(BOOTSTRAP_IP, BOOTSTRAP_PORT)]).addCallback(main, server,Gateway(),True)
