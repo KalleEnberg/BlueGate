@@ -222,7 +222,7 @@ def kademliaGroupInstructionListener(server,gateway):
         server.get("UPDATE_GROUPS").addCallback(interpretGroupsInstruction,server,gateway)
                     
 def main(arg,server,gateway,first=False):
-    if first:
+    #if first:
         #thread.start_new_thread(kademliaPopInstructionListener, (server,gateway))
         #thread.start_new_thread(kademliaGroupInstructionListener, (server,gateway))
     g = gateway
