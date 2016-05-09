@@ -341,7 +341,7 @@ def main(arg,server,gateway,first):
             ibeacon = raw_input("Enter data to send (as UTF-8 strings), on the form UUID:major:minor:soft_reboot_password :").split(":")
             print("Instruction sent!")
             print(createPopInstruction(gatewayid, popid,ibeacon[0],ibeacon[1], ibeacon[2], ibeacon[3]))
-            time.sleep(0.2)
+            time.sleep(0.000000000001)
             print(createPopInstruction(gatewayid, popid,ibeacon[0],ibeacon[1], ibeacon[2], ibeacon[3]))
             #return server.set("UPDATE_POPULATION",createPopInstruction(gatewayid, popid,ibeacon[0],ibeacon[1], ibeacon[2], ibeacon[3])).addCallback(main,server,g)
         elif responseNumber=="18" :
