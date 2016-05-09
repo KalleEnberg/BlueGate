@@ -179,6 +179,7 @@ def waitAndClear(arg,instruction_type,server,gateway):
         return server.set("UPDATE_GROUPS",0).addCallback(main,server,gateway)
     else:
         return server.set("UPDATE_POPULATION",0).addCallback(main,server,gateway)
+    
 def createPopInstruction(gatewayid,popid,uuid,major,minor,soft_reboot):
     return gatewayid + "," + popid + "," + uuid + "," + major + "," + minor + "," + soft_reboot + "," + str(time.time() * 1000)
 
