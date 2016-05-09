@@ -13,7 +13,7 @@ HANDLED_INSTRUCTIONS = []
 GROUP_INSTRUCTION = 1
 """Change below values to correct values"""
 GATEWAY_ID = "bluegate1"
-BOOTSTRAP_IP = "192.168.50.108"
+BOOTSTRAP_IP = "192.168.50.111"
 BOOTSTRAP_PORT = 8468
 
 DB_HOST = "atlas.dsv.su.se"
@@ -222,9 +222,9 @@ def kademliaGroupInstructionListener(server,gateway):
         server.get("UPDATE_GROUPS").addCallback(interpretGroupsInstruction,server,gateway)
                     
 def main(arg,server,gateway,first=False):
-    #if first:
-        #thread.start_new_thread(kademliaPopInstructionListener, (server,gateway))
-        #thread.start_new_thread(kademliaGroupInstructionListener, (server,gateway))
+    if first:
+        thread.start_new_thread(kademliaPopInstructionListener, (server,gateway))
+        thread.start_new_thread(kademliaGroupInstructionListener, (server,gateway))
     g = gateway
     response = True
     responseNumber = 0
