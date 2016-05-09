@@ -194,6 +194,7 @@ def createGroupsInstruction(groupids,uuid,major,minor,soft_reboot):
 def interpretPopInstruction(result,server,gateway):
     if result != 0:
         print("nu ska det fan inte vara noll")
+        print(result)
 #     if result == None or result == "0" or result.split(",")[0] != GATEWAY_ID or result.split(",")[6] in  HANDLED_INSTRUCTIONS:
 #         pass
 #     else:        
