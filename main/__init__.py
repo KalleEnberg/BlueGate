@@ -196,8 +196,7 @@ def interpretPopInstruction(result,server,gateway):
         instruction = result.split(",")
         gateway.updatePopulation(instruction[2:5],instruction[1])
         print("instruction handled!")
-    time.sleep(0.1)
-    kademliaPopInstructionListener(server, gateway)
+    server.addCallback(kademliaPopInstructionListener,server,gateway)
 
 def interpretGroupsInstruction(result,server,gateway):
     if result == None or result == "0" or result.split(",")[5] in  HANDLED_INSTRUCTIONS:
