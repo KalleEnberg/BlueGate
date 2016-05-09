@@ -194,7 +194,7 @@ def interpretPopInstruction(result,server,gateway):
         pass
     else:
         instruction = result.split(",")
-        gateway.updatePopulation(instruction[2:5],instruction[1])
+        #gateway.updatePopulation(instruction[2:5],instruction[1])
         print("instruction handled!")
     kademliaPopInstructionListener(server, gateway)
 
@@ -225,8 +225,8 @@ def kademliaGroupInstructionListener(server,gateway):
                     
 def main(arg,server,gateway,first=False):
     if first:
-        #thread.start_new_thread(kademliaPopInstructionListener, (server,gateway))
-        thread.start_new_thread(kademliaGroupInstructionListener, (server,gateway))
+        thread.start_new_thread(kademliaPopInstructionListener, (server,gateway))
+        #thread.start_new_thread(kademliaGroupInstructionListener, (server,gateway))
     g = gateway
     response = True
     responseNumber = 0
