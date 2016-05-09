@@ -202,6 +202,7 @@ def kademliaPopInstructionListener(server,gateway):
 def kademliaGroupInstructionListener(server,gateway):
     while True:
         value = str(server.get("UPDATE_GROUPS"))
+        print(value)
         if value == None or value == "0" or value.split(",")[5] in  HANDLED_INSTRUCTIONS:
             pass
         else:
