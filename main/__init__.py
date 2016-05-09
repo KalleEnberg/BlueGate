@@ -176,6 +176,7 @@ class SensorPopulation:
                 
 def waitAndClear(arg,instruction_type,server,gateway):
     time.sleep(1) #is this a good value?
+    print("kors")
     if instruction_type == GROUP_INSTRUCTION:
         return server.set("UPDATE_GROUPS",0).addCallback(main,server,gateway)
     else:
