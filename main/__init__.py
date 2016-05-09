@@ -225,6 +225,7 @@ def interpretGroupsInstruction(result,server,gateway):
 
 def kademliaPopInstructionListener(server,gateway):
     while True:
+        print("igang")
         server.get("UPDATE_POPULATION").addCallback(interpretPopInstruction,server,gateway) #ska returnera och lasa resultat i en annan funktion (med callback).
 def kademliaGroupInstructionListener(server,gateway):
     while True:
