@@ -193,8 +193,10 @@ def interpretPopInstruction(result,server,gateway):
     if result == None or result == "0" or result.split(",")[0] != GATEWAY_ID or result.split(",")[6] in  HANDLED_INSTRUCTIONS:
         pass
     else:
+        print "vi kommer hit"
+        
         instruction = result.split(",")
-        #gateway.updatePopulation(instruction[2:5],instruction[1])
+        gateway.updatePopulation(instruction[2:5],instruction[1])
         print("instruction handled!")
     kademliaPopInstructionListener(server, gateway)
 
