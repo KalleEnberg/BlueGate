@@ -192,6 +192,7 @@ def createGroupsInstruction(groupids,uuid,major,minor,soft_reboot):
     return res[:-1] + "," + uuid + "," + major + "," + minor + "," + soft_reboot + "," + str(time.time() * 1000)
 
 def interpretPopInstruction(result,server,gateway):
+    print(result)
     if result != "0":
         print("0:a har")
         print(type(result))
