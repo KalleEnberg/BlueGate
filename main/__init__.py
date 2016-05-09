@@ -193,6 +193,7 @@ def createGroupsInstruction(groupids,uuid,major,minor,soft_reboot):
 
 def interpretPopInstruction(result,server,gateway):
     if result != None:
+        print("0:a har")
         print(type(result))
         print(result)
     elif result != 0:
