@@ -178,9 +178,9 @@ def waitAndClear(arg,instruction_type,server,gateway):
     time.sleep(1) #is this a good value?
     print("kors")
     if instruction_type == GROUP_INSTRUCTION:
-        return server.set("UPDATE_GROUPS",0).addCallback(main,server,gateway)
+        return server.set("UPDATE_GROUPS","0").addCallback(main,server,gateway)
     else:
-        return server.set("UPDATE_POPULATION",0).addCallback(main,server,gateway)
+        return server.set("UPDATE_POPULATION","0").addCallback(main,server,gateway)
     
 def createPopInstruction(gatewayid,popid,uuid,major,minor,soft_reboot):
     return gatewayid + "," + popid + "," + uuid + "," + major + "," + minor + "," + soft_reboot + "," + str(time.time() * 1000)
