@@ -7,6 +7,7 @@ import mysql.connector
 from bluepymaster.bluepy.btle import *
 from mysql.connector.errors import ProgrammingError
 import thread
+from datetime import datetime
 
 """Change below values to correct values"""
 GATEWAY_ID = "bluegate1"
@@ -171,7 +172,8 @@ class SensorPopulation:
         if(values):
             for row in values:
                 self.members.append(Peripheral(row[0],ADDR_TYPE_RANDOM))
-                
+def createPopInstruction(gatewayid,popid,uuid,major,minor,soft_reboot):
+     return gatewayid + "," + popid + "," + uuid + "," + major + "," + minor + "," + soft_reboot + "," + str(time.time() * 1000)
 def kademliaListener(server,gateway):
     while True:
         value = server.get("some key here")
@@ -189,7 +191,7 @@ def main(arg,server,gateway,first):
         print ("""Welcome to BlueGate! choose an action:
       
         1. Verify database and Kademlia connection
-        2. List all populations
+        2. List all local populations
         3. List a population
         4. Add a new population
         5. Add multiple populations
@@ -203,15 +205,16 @@ def main(arg,server,gateway,first):
         13. Remove a device from a population
         14. Remove multiple devices from a population
         15. Send data to a device
-        16. Send data to all members of a population
-        17. List all groups
-        18. List a group
-        19. Create a group of populations
-        20. Add a population to a group (populations of other BlueGates is accepted)
-        21. Delete a population from a group
-        22. Delete a group
-        23. Send data to a group
-        24. Quit\n""")
+        16. Send data to all members of a local population
+        17. Send data to all members of a remote population
+        18. List all groups
+        19. List a group
+        20. Create a group of populations
+        21. Add a population to a group (populations of other BlueGates is accepted)
+        22. Delete a population from a group
+        23. Delete a group
+        24. Send data to a group
+        25. Quit\n""")
         responseNumber=raw_input("Enter action number:")
         if responseNumber=="1" :
             print("Connected to database: " + g.dbhost + ":" +  g.dbname)
@@ -332,41 +335,49 @@ def main(arg,server,gateway,first):
             #except ProgrammingError:
                 #print("Could not find specified population, please check the ID")
             print("Population updated!")
-        elif responseNumber=="17" :
+        elif responseNumber == "17" :
+            gatewayid = raw_input("Enter target gateway ID:")
+            popid = raw_input("Enter population ID:")
+            ibeacon = raw_input("Enter data to send (as UTF-8 strings), on the form UUID:major:minor:soft_reboot_password :").split(":")
+            print("Instruction sent!")
+            print(createPopInstruction(gatewayid, popid,ibeacon[0],ibeacon[1], ibeacon[2], ibeacon[3]))
+            print(createPopInstruction(gatewayid, popid,ibeacon[0],ibeacon[1], ibeacon[2], ibeacon[3]))
+            #return server.set("UPDATE_POPULATION",createPopInstruction(gatewayid, popid,ibeacon[0],ibeacon[1], ibeacon[2], ibeacon[3])).addCallback(main,server,g)
+        elif responseNumber=="18" :
             print("Groups:")
             for group in g.listGroups():
                 print(group)
-        elif responseNumber=="18" :
+        elif responseNumber=="19" :
             groupid = raw_input("Enter group ID:")
             print("Populations in " + groupid + ":")
             for row in g.listGroup(groupid):
                 print(row[0] + ":" + row[1])
-        elif responseNumber=="19" :
+        elif responseNumber=="20" :
             groupid = raw_input("Enter group ID:")
             g.addGroup(groupid)
             print(groupid + " was added to database")
-        elif responseNumber=="20" :
+        elif responseNumber=="21" :
             groupid = raw_input("Enter group ID:")
             gatewayid = raw_input("Enter gateway ID where population exists:")
             popid = raw_input("Enter population ID:")
             g.insertPopulation(groupid,gatewayid,popid)
             print(gatewayid + ":" + popid + " was inserted into " + groupid)
-        elif responseNumber=="21" :
+        elif responseNumber=="22" :
             groupid = raw_input("Enter group ID:")
             gatewayid = raw_input("Enter gateway ID where population exists:")
             popid = raw_input("Enter population ID:")
             g.removePopulation(groupid,gatewayid,popid)
             print(gatewayid + ":" + popid + " was deleted from " + groupid)
-        elif responseNumber=="22" :
+        elif responseNumber=="23" :
             groupid = raw_input("Enter group ID:")
             g.deleteGroup(groupid)
             print("Deleted " + groupid + " from database")
-        elif responseNumber=="23" :
+        elif responseNumber=="24" :
             groupid = raw_input("Enter group ID:")
             instruction = raw_input("Instruction to send:")
             print("Instructions sent!")
             return server.set("hash? or commonly known value (key)",groupid + instruction).addCallback(main,server,g)
-        elif responseNumber=="24" :
+        elif responseNumber=="25" :
             print ("Bye!")
             response = False
             reactor.stop()
