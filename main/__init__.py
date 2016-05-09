@@ -190,7 +190,8 @@ def createGroupsInstruction(groupids,uuid,major,minor,soft_reboot):
         res += groupid + ":"
     return res[:-1] + "," + uuid + "," + major + "," + minor + "," + soft_reboot + "," + str(time.time() * 1000)
 def interpretPopInstruction(result,server,gateway):
-    if result == None or result == "0" or result.split(",")[6] in  HANDLED_INSTRUCTIONS:
+    print "vi kommer hit"
+    if result == None or result == "0" or result.split(",")[0] != GATEWAY_ID or result.split(",")[6] in  HANDLED_INSTRUCTIONS:
         pass
     else:        
         instruction = result.split(",")
