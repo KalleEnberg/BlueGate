@@ -192,7 +192,7 @@ def createGroupsInstruction(groupids,uuid,major,minor,soft_reboot):
 def kademliaPopInstructionListener(server,gateway):
     while True:
         value = str(server.get("UPDATE_POPULATION"))
-        if value == None or value == "0" or value.split(",")[0] != GATEWAY_ID or value.split(",")[6] in  HANDLED_INSTRUCTIONS:
+        if value == None or value[0] == "0" or value[0].split(",")[0] != GATEWAY_ID or value[0].split(",")[6] in  HANDLED_INSTRUCTIONS:
             pass
         else:
             instruction = value.split(",")
@@ -203,7 +203,7 @@ def kademliaGroupInstructionListener(server,gateway):
     while True:
         value = str(server.get("UPDATE_GROUPS"))
         print(value)
-        if value == None or value == "0" or value.split(",")[5] in  HANDLED_INSTRUCTIONS:
+        if value == None or value[0] == "0" or value[0].split(",")[5] in  HANDLED_INSTRUCTIONS:
             pass
         else:
             instruction = value.split(",")
