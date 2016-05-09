@@ -192,6 +192,7 @@ def createGroupsInstruction(groupids,uuid,major,minor,soft_reboot):
 def kademliaPopInstructionListener(server,gateway):
     while True:
         value = server.get("UPDATE_POPULATION")
+        print(type(value))
         if value == None or value == "0" or value.split(",")[0] != GATEWAY_ID or value.split(",")[6] in  HANDLED_INSTRUCTIONS:
             pass
         else:
