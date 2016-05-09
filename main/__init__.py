@@ -7,8 +7,9 @@ import mysql.connector
 from bluepymaster.bluepy.btle import *
 from mysql.connector.errors import ProgrammingError
 import thread
-from datetime import datetime
 
+HANDLED_INSTRUCTIONS = []
+GROUP_INSTRUCTION = 1
 """Change below values to correct values"""
 GATEWAY_ID = "bluegate1"
 BOOTSTRAP_IP = "192.168.50.108"
@@ -154,13 +155,12 @@ class Gateway:
         data -- the data to send
         popid -- the population ID"""
         targetpop = self.getPopulation(popid)
-        ibeacon = data.split(":")
-        (uuid,major,minor) = (ibeacon[0], ibeacon[1], ibeacon[2])
+        (uuid,major,minor,soft_reboot) = (data[0], data[1], data[2],data[3])
         for p in targetpop.members:
             p.writeCharacteristic(32,uuid)
             p.writeCharacteristic(34,major)
             p.writeCharacteristic(36,minor)
-            p.writeCharacteristic(50,"1234abcd")
+            p.writeCharacteristic(50,soft_reboot)
         return True
     
 class SensorPopulation:
@@ -172,18 +172,54 @@ class SensorPopulation:
         if(values):
             for row in values:
                 self.members.append(Peripheral(row[0],ADDR_TYPE_RANDOM))
+                
+def waitAndClear(arg,instruction_type,server,gateway):
+    time.sleep(1) #is this a good value?
+    if instruction_type == GROUP_INSTRUCTION:
+        return server.set("UPDATE_GROUPS",0).addCallback(main,server,gateway)
+    else:
+        return server.set("UPDATE_POPULATION",0).addCallback(main,server,gateway)
 def createPopInstruction(gatewayid,popid,uuid,major,minor,soft_reboot):
-     return gatewayid + "," + popid + "," + uuid + "," + major + "," + minor + "," + soft_reboot + "," + str(time.time() * 1000)
-def kademliaListener(server,gateway):
-    while True:
-        value = server.get("some key here")
-        if(value != None):
-            pass
-            #continue with more keys, or act on Gateway in regards to the instruction collected.
+    return gatewayid + "," + popid + "," + uuid + "," + major + "," + minor + "," + soft_reboot + "," + str(time.time() * 1000)
 
-def main(arg,server,gateway,first):
+def createGroupsInstruction(groupids,uuid,major,minor,soft_reboot):
+    res = ""
+    for groupid in groupids:
+        res += groupid + ":"
+    return res[:-1] + "," + uuid + "," + major + "," + minor + "," + soft_reboot + "," + str(time.time() * 1000)
+
+def kademliaPopInstructionListener(server,gateway):
+    while True:
+        value = server.get("UPDATE_POPULATION")
+        if value == None or value == "0" or value.split(",")[0] != GATEWAY_ID or value.split(",")[6] in  HANDLED_INSTRUCTIONS:
+            pass
+        else:
+            instruction = value.split(",")
+            gateway.updatePopulation(instruction[2:5],instruction[1])
+            print("instruction handled!")
+            
+def kademliaGroupInstructionListener(server,gateway):
+    while True:
+        value = server.get("UPDATE_GROUPS")
+        if value == None or value == "0" or value.split(",")[5] in  HANDLED_INSTRUCTIONS:
+            pass
+        else:
+            instruction = value.split(",")
+            groups = value[0].split(":")
+            populationstoupdate = []
+            for group in groups:
+                for row in gateway.listGroup(group):
+                    if(row[0] == GATEWAY_ID):
+                        populationstoupdate += row[1]
+            for population in populationstoupdate:
+                gateway.updatePopulation(instruction[1:4],population)
+                print(population + "updated!")
+            print("instruction handled!")
+            
+def main(arg,server,gateway,first=False):
     if first:
-        thread.start_new_thread(kademliaListener, (server,gateway))
+        thread.start_new_thread(kademliaPopInstructionListener, (server,gateway))
+        thread.start_new_thread(kademliaGroupInstructionListener, (server,gateway))
     g = gateway
     response = True
     responseNumber = 0
@@ -329,7 +365,7 @@ def main(arg,server,gateway,first):
             print("Data sent!")
         elif responseNumber=="16" :
             popid = raw_input("Enter population ID:")
-            ibeacon = raw_input("Enter data to send (as UTF-8 strings), on the form UUID:major:minor :")
+            ibeacon = raw_input("Enter data to send (as UTF-8 strings), on the form UUID:major:minor:soft_reboot_password :").split(":")
             #try:
             g.updatePopulation(ibeacon, popid)
             #except ProgrammingError:
@@ -340,10 +376,7 @@ def main(arg,server,gateway,first):
             popid = raw_input("Enter population ID:")
             ibeacon = raw_input("Enter data to send (as UTF-8 strings), on the form UUID:major:minor:soft_reboot_password :").split(":")
             print("Instruction sent!")
-            print(createPopInstruction(gatewayid, popid,ibeacon[0],ibeacon[1], ibeacon[2], ibeacon[3]))
-            time.sleep(0.000000000001)
-            print(createPopInstruction(gatewayid, popid,ibeacon[0],ibeacon[1], ibeacon[2], ibeacon[3]))
-            #return server.set("UPDATE_POPULATION",createPopInstruction(gatewayid, popid,ibeacon[0],ibeacon[1], ibeacon[2], ibeacon[3])).addCallback(main,server,g)
+            return server.set("UPDATE_POPULATION",createPopInstruction(gatewayid, popid,ibeacon[0],ibeacon[1], ibeacon[2], ibeacon[3])).addCallback(waitAndClear,None,server,g)
         elif responseNumber=="18" :
             print("Groups:")
             for group in g.listGroups():
@@ -374,10 +407,10 @@ def main(arg,server,gateway,first):
             g.deleteGroup(groupid)
             print("Deleted " + groupid + " from database")
         elif responseNumber=="24" :
-            groupid = raw_input("Enter group ID:")
-            instruction = raw_input("Instruction to send:")
+            groupids = raw_input("Enter group ID:s, separated by commas:").split(",")
+            ibeacon = raw_input("Enter data to send (as UTF-8 strings), on the form UUID:major:minor:soft_reboot_password :").split(":")
             print("Instructions sent!")
-            return server.set("hash? or commonly known value (key)",groupid + instruction).addCallback(main,server,g)
+            return server.set("UPDATE_GROUPS",createGroupsInstruction(groupids, ibeacon[0],ibeacon[1],ibeacon[2],ibeacon[3])).addCallback(waitAndClear,GROUP_INSTRUCTION,server,g)
         elif responseNumber=="25" :
             print ("Bye!")
             response = False
