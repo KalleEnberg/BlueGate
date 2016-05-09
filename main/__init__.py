@@ -196,7 +196,7 @@ def interpretPopInstruction(result,server,gateway):
         instruction = result.split(",")
         gateway.updatePopulation(instruction[2:5],instruction[1])
         print("instruction handled!")
-    server.get("nonsense").addCallback(kademliaPopInstructionListener,server,gateway)
+    #server.get("nonsense").addCallback(kademliaPopInstructionListener,server,gateway)
 
 def interpretGroupsInstruction(result,server,gateway):
     if result == None or result == "0" or result.split(",")[5] in  HANDLED_INSTRUCTIONS:
@@ -213,12 +213,12 @@ def interpretGroupsInstruction(result,server,gateway):
             gateway.updatePopulation(instruction[1:4],population)
             print(population + "updated!")
         print("instruction handled!")
-    kademliaGroupInstructionListener(server, gateway)
+    #kademliaGroupInstructionListener(server, gateway)
 
-def kademliaPopInstructionListener(nonsense=None,server,gateway):
+def kademliaPopInstructionListener(server,gateway):
     while True:
         server.get("UPDATE_POPULATION").addCallback(interpretPopInstruction,server,gateway) #ska returnera och lasa resultat i en annan funktion (med callback).
-            
+        print("rullar")
 def kademliaGroupInstructionListener(server,gateway):
     while True:
         server.get("UPDATE_GROUPS").addCallback(interpretGroupsInstruction,server,gateway)
