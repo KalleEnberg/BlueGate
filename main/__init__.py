@@ -7,7 +7,7 @@ import mysql.connector
 from bluepymaster.bluepy.btle import *
 from mysql.connector.errors import ProgrammingError
 import thread
-from bluemaster import server
+
 
 HANDLED_INSTRUCTIONS = []
 GROUP_INSTRUCTION = 1
