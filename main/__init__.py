@@ -178,9 +178,11 @@ def waitAndClear(arg,instruction_type,server,gateway):
     time.sleep(1) #is this a good value?
     print("kors")
     if instruction_type == GROUP_INSTRUCTION:
-        return server.set("UPDATE_GROUPS","1").addCallback(main,server,gateway)
+        #return server.set("UPDATE_GROUPS","1").addCallback(main,server,gateway)
+        server.set("UPDATE_GROUPS","1")
     else:
-        return server.set("UPDATE_POPULATION","1").addCallback(main,server,gateway)
+        #return server.set("UPDATE_POPULATION","1").addCallback(main,server,gateway)
+        server.set("UPDATE_POPULATION","1")
     
 def createPopInstruction(gatewayid,popid,uuid,major,minor,soft_reboot):
     return gatewayid + "," + popid + "," + uuid + "," + major + "," + minor + "," + soft_reboot + "," + str(time.time() * 1000)
@@ -385,7 +387,7 @@ def main(arg,server,gateway,first=False):
             popid = raw_input("Enter population ID:")
             ibeacon = raw_input("Enter data to send (as UTF-8 strings), on the form UUID:major:minor:soft_reboot_password :").split(":")
             print("Instruction sent!")
-            return server.set("UPDATE_POPULATION",createPopInstruction(gatewayid, popid,ibeacon[0],ibeacon[1], ibeacon[2], ibeacon[3])).addCallback(waitAndClear,None,server,g)
+            server.set("UPDATE_POPULATION",createPopInstruction(gatewayid, popid,ibeacon[0],ibeacon[1], ibeacon[2], ibeacon[3])).addCallback(waitAndClear,None,server,g)
         elif responseNumber=="18" :
             print("Groups:")
             for group in g.listGroups():
@@ -419,7 +421,7 @@ def main(arg,server,gateway,first=False):
             groupids = raw_input("Enter group ID:s, separated by commas:").split(",")
             ibeacon = raw_input("Enter data to send (as UTF-8 strings), on the form UUID:major:minor:soft_reboot_password :").split(":")
             print("Instructions sent!")
-            return server.set("UPDATE_GROUPS",createGroupsInstruction(groupids, ibeacon[0],ibeacon[1],ibeacon[2],ibeacon[3])).addCallback(waitAndClear,GROUP_INSTRUCTION,server,g)
+            server.set("UPDATE_GROUPS",createGroupsInstruction(groupids, ibeacon[0],ibeacon[1],ibeacon[2],ibeacon[3])).addCallback(waitAndClear,GROUP_INSTRUCTION,server,g)
         elif responseNumber=="25" :
             print ("Bye!")
             response = False
