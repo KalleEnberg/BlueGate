@@ -194,6 +194,7 @@ def createGroupsInstruction(groupids,uuid,major,minor,soft_reboot):
     return res[:-1] + "," + uuid + "," + major + "," + minor + "," + soft_reboot + "," + str(time.time() * 1000)
 
 def interpretPopInstruction(result,server,gateway):
+    print("interpretkors")
     if result != 0:
         print("nu ska det fan inte vara noll")
         print(result)
@@ -224,6 +225,7 @@ def interpretGroupsInstruction(result,server,gateway):
 
 def kademliaPopInstructionListener(server,gateway):
     while True:
+        print("listenerkors")
         server.get("UPDATE_POPULATION").addCallback(interpretPopInstruction,server,gateway) #ska returnera och lasa resultat i en annan funktion (med callback).
 def kademliaGroupInstructionListener(server,gateway):
     while True:
