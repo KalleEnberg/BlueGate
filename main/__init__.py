@@ -7,6 +7,7 @@ import mysql.connector
 from bluepymaster.bluepy.btle import *
 from mysql.connector.errors import ProgrammingError
 import thread
+from bluemaster import server
 
 HANDLED_INSTRUCTIONS = []
 GROUP_INSTRUCTION = 1
@@ -188,36 +189,40 @@ def createGroupsInstruction(groupids,uuid,major,minor,soft_reboot):
     for groupid in groupids:
         res += groupid + ":"
     return res[:-1] + "," + uuid + "," + major + "," + minor + "," + soft_reboot + "," + str(time.time() * 1000)
+def interpretPopInstruction(result,server,gateway):
+    if result == None or result == "0" or result.split(",")[0] != GATEWAY_ID or result.split(",")[6] in  HANDLED_INSTRUCTIONS:
+        pass
+    else:
+        instruction = result.split(",")
+        gateway.updatePopulation(instruction[2:5],instruction[1])
+        print("instruction handled!")
+    kademliaPopInstructionListener(server, gateway)
+
+def interpretGroupsInstruction(result,server,gateway):
+    if result == None or result == "0" or result.split(",")[5] in  HANDLED_INSTRUCTIONS:
+        pass
+    else:
+        instruction = result.split(",")
+        groups = instruction[0].split(":")
+        populationstoupdate = []
+        for group in groups:
+            for row in gateway.listGroup(group):
+                if(row[0] == GATEWAY_ID):
+                    populationstoupdate += row[1]
+        for population in populationstoupdate:
+            gateway.updatePopulation(instruction[1:4],population)
+            print(population + "updated!")
+        print("instruction handled!")
+        kademliaGroupInstructionListener(server, gateway)
 
 def kademliaPopInstructionListener(server,gateway):
     while True:
-        value = str(server.get("UPDATE_POPULATION"))
-        if value == None or value[0] == "0" or value[0].split(",")[0] != GATEWAY_ID or value[0].split(",")[6] in  HANDLED_INSTRUCTIONS:
-            pass
-        else:
-            instruction = value.split(",")
-            gateway.updatePopulation(instruction[2:5],instruction[1])
-            print("instruction handled!")
+        server.get("UPDATE_POPULATION").addCallback(interpretPopInstruction,server,gateway) #ska returnera och lasa resultat i en annan funktion (med callback).
             
 def kademliaGroupInstructionListener(server,gateway):
     while True:
-        value = str(server.get("UPDATE_GROUPS"))
-        print(value)
-        if value == None or value[0] == "0" or value[0].split(",")[5] in  HANDLED_INSTRUCTIONS:
-            pass
-        else:
-            instruction = value.split(",")
-            groups = value[0].split(":")
-            populationstoupdate = []
-            for group in groups:
-                for row in gateway.listGroup(group):
-                    if(row[0] == GATEWAY_ID):
-                        populationstoupdate += row[1]
-            for population in populationstoupdate:
-                gateway.updatePopulation(instruction[1:4],population)
-                print(population + "updated!")
-            print("instruction handled!")
-            
+        server.get("UPDATE_GROUPS").addCallback(interpretGroupsInstruction,server,gateway)
+                    
 def main(arg,server,gateway,first=False):
     if first:
         thread.start_new_thread(kademliaPopInstructionListener, (server,gateway))
