@@ -454,7 +454,7 @@ def get():
     server.listen(BOOTSTRAP_PORT)
     server.bootstrap([(BOOTSTRAP_IP, BOOTSTRAP_PORT)])#.addCallback(bootstrapDone,server)
     loopingcall = LoopingCall(bootstrapDone,server) #WIJN WIIIIIIIIIIIIIIJN
-    loopingcall.start(1)
+    loopingcall.start(5)
     reactor.run()
 #mylist = [0,1,2,3,4]
 #for i in mylist:
