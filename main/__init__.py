@@ -419,7 +419,13 @@ def main(server,gateway):
     if g.dbconnection:
         g.dbconnection.close()
 #log.startLogging(sys.stdout) #ta bort kommentar for loggning i nod
+def done(result):
+    print "Key result:"
+    print result
 
+def bootstrapDone(server):
+    server.get("hej").addCallback(done)
+    
 gateway = Gateway()
 server = Server()
 server.listen(BOOTSTRAP_PORT)
@@ -427,8 +433,11 @@ server.bootstrap([(BOOTSTRAP_IP, BOOTSTRAP_PORT)])
 
 #grouploop = LoopingCall(kademliaGroupInstructionListener,(server,gateway)) 
 #grouploop.start(1)
-poploop = LoopingCall(kademliaPopInstructionListener,(server,gateway))
-poploop.start(2)
+#poploop = LoopingCall(kademliaPopInstructionListener,(server,gateway))
+#poploop.start(1)
+loopingcall = LoopingCall(bootstrapDone,server) #WIJN WIIIIIIIIIIIIIIJN
+loopingcall.start(1)
+
 
 #main(server,gateway)
 reactor.run()
