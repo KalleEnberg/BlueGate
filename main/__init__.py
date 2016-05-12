@@ -187,12 +187,12 @@ def createGroupsInstruction(groupids,uuid,major,minor,soft_reboot):
 
 def interpretPopInstruction(result,server,gateway):
     print(result)
-    if result == None or result.split(",")[0] != GATEWAY_ID or result.split(",")[6] in  HANDLED_INSTRUCTIONS:
-        print("denna galler")
-    else:        
-        instruction = result.split(",")
-        gateway.updatePopulation(instruction[2:5],instruction[1])
-        print("instruction handled!")
+#     if result == None or result.split(",")[0] != GATEWAY_ID or result.split(",")[6] in  HANDLED_INSTRUCTIONS:
+#         print("denna galler")
+#     else:        
+#         instruction = result.split(",")
+#         gateway.updatePopulation(instruction[2:5],instruction[1])
+#         print("instruction handled!")
 
 def interpretGroupsInstruction(result,server,gateway):
     if result == None or result.split(",")[5] in  HANDLED_INSTRUCTIONS:
