@@ -437,5 +437,5 @@ grouploop.start(1)
 poploop = LoopingCall(kademliaPopInstructionListener,(server,gateway))
 poploop.start(1)
 
-reactor.run()
 main(server,gateway)
+reactor.run()
