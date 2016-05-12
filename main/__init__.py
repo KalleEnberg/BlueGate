@@ -419,43 +419,23 @@ def main(server,gateway):
     if g.dbconnection:
         g.dbconnection.close()
 #log.startLogging(sys.stdout) #ta bort kommentar for loggning i nod
-# def done(result):
-#     print "Key result:"
-#     print result
-# 
-# def bootstrapDone(server):
-#     server.get("hej").addCallback(done)
-#     
-# gateway = Gateway()
-# server = Server()
-# server.listen(BOOTSTRAP_PORT)
-# server.bootstrap([(BOOTSTRAP_IP, BOOTSTRAP_PORT)])
-# 
-# #grouploop = LoopingCall(kademliaGroupInstructionListener,(server,gateway)) 
-# #grouploop.start(1)
-# #poploop = LoopingCall(kademliaPopInstructionListener,(server,gateway))
-# #poploop.start(1)
-# loopingcall = LoopingCall(bootstrapDone,server) #WIJN WIIIIIIIIIIIIIIJN
-# loopingcall.start(1)
-# 
-# 
-# #main(server,gateway)
-# reactor.run()
-def get():
-    #reload(twisted.internet)
-    def done(result):
-        print "Key result:"
-        print result
 
-    def bootstrapDone(server):
-        server.get("hej").addCallback(done)
-    
-    server = Server()
-    server.listen(BOOTSTRAP_PORT)
-    server.bootstrap([(BOOTSTRAP_IP, BOOTSTRAP_PORT)])#.addCallback(bootstrapDone,server)
-    loopingcall = LoopingCall(bootstrapDone,server) #WIJN WIIIIIIIIIIIIIIJN
-    loopingcall.start(1)
-    reactor.run()
+     
+gateway = Gateway()
+server = Server()
+server.listen(BOOTSTRAP_PORT)
+server.bootstrap([(BOOTSTRAP_IP, BOOTSTRAP_PORT)])
+ 
+#grouploop = LoopingCall(kademliaGroupInstructionListener,(server,gateway)) 
+#grouploop.start(1)
+poploop = LoopingCall(kademliaPopInstructionListener,(server,gateway))
+poploop.start(1)
+
+ 
+ 
+#main(server,gateway)
+reactor.run()
+
 #mylist = [0,1,2,3,4]
 #for i in mylist:
 get()
