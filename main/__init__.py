@@ -428,7 +428,7 @@ server.bootstrap([(BOOTSTRAP_IP, BOOTSTRAP_PORT)])
 #grouploop = LoopingCall(kademliaGroupInstructionListener,(server,gateway)) 
 #grouploop.start(1)
 poploop = LoopingCall(kademliaPopInstructionListener,(server,gateway))
-poploop.start(1)
+poploop.start(2)
 
 #main(server,gateway)
 reactor.run()
