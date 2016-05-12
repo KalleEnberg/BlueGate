@@ -156,6 +156,7 @@ class Gateway:
         Parameters:
         data -- the data to send
         popid -- the population ID"""
+        print("updatepop kors!")
         targetpop = self.getPopulation(popid)
         (uuid,major,minor,soft_reboot) = (data[0], data[1], data[2],data[3])
         for p in targetpop.members:
@@ -177,7 +178,6 @@ class SensorPopulation:
                 
 def waitAndClear(arg,instruction_type,server,gateway):
     time.sleep(1) #is this a good value?
-    print("kors")
     if instruction_type == GROUP_INSTRUCTION:
         #return server.set("UPDATE_GROUPS","1").addCallback(main,server,gateway)
         server.set("UPDATE_GROUPS","1")
