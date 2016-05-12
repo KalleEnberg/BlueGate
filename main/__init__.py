@@ -185,7 +185,7 @@ def createGroupsInstruction(groupids,uuid,major,minor,soft_reboot):
         res += groupid + ":"
     return res[:-1] + "," + uuid + "," + major + "," + minor + "," + soft_reboot + "," + str(time.time() * 1000)
 
-def interpretPopInstruction(result,server,gateway):
+def interpretPopInstruction(result,gateway):
     print(result)
 #     if result == None or result.split(",")[0] != GATEWAY_ID or result.split(",")[6] in  HANDLED_INSTRUCTIONS:
 #         print("denna galler")
@@ -214,7 +214,7 @@ def kademliaPopInstructionListener(args):
     print("lyssnar")
     server = args[0]
     gateway = args[1]
-    server.get("UPDATE_POPULATION").addCallback(interpretPopInstruction,server,gateway) #ska returnera och lasa resultat i en annan funktion (med callback).
+    server.get("UPDATE_POPULATION").addCallback(interpretPopInstruction,gateway) #ska returnera och lasa resultat i en annan funktion (med callback).
 def kademliaGroupInstructionListener(args):
     server = args[0]
     gateway = args[1]
