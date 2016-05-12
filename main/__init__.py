@@ -195,6 +195,7 @@ def interpretPopInstruction(result,gateway):
 #         print("instruction handled!")
 
 def interpretGroupsInstruction(result,server,gateway):
+        print(result)
     if result == None or result.split(",")[5] in  HANDLED_INSTRUCTIONS:
         pass
     else:
@@ -426,10 +427,10 @@ server = Server()
 server.listen(BOOTSTRAP_PORT)
 server.bootstrap([(BOOTSTRAP_IP, BOOTSTRAP_PORT)])
  
-#grouploop = LoopingCall(kademliaGroupInstructionListener,(server,gateway)) 
-#grouploop.start(1)
+grouploop = LoopingCall(kademliaGroupInstructionListener,(server,gateway)) 
+grouploop.start(1,False)
 poploop = LoopingCall(kademliaPopInstructionListener,(server,gateway))
-poploop.start(1)
+poploop.start(1,False)
 
  
  
