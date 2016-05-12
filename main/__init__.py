@@ -194,7 +194,7 @@ def interpretPopInstruction(result,gateway):
 #         gateway.updatePopulation(instruction[2:5],instruction[1])
 #         print("instruction handled!")
 
-def interpretGroupsInstruction(result,server,gateway):
+def interpretGroupsInstruction(result,gateway):
     print("test")
     if result == None or result.split(",")[5] in  HANDLED_INSTRUCTIONS:
         pass
@@ -219,7 +219,7 @@ def kademliaPopInstructionListener(args):
 def kademliaGroupInstructionListener(args):
     server = args[0]
     gateway = args[1]
-    server.get("UPDATE_GROUPS").addCallback(interpretGroupsInstruction,server,gateway)
+    server.get("UPDATE_GROUPS").addCallback(interpretGroupsInstruction,gateway)
                     
 def main(server,gateway):
     g = gateway
@@ -428,16 +428,9 @@ server.listen(BOOTSTRAP_PORT)
 server.bootstrap([(BOOTSTRAP_IP, BOOTSTRAP_PORT)])
  
 grouploop = LoopingCall(kademliaGroupInstructionListener,(server,gateway)) 
-grouploop.start(1,False)
+grouploop.start(1)
 poploop = LoopingCall(kademliaPopInstructionListener,(server,gateway))
-poploop.start(1,False)
+poploop.start(1)
 
- 
- 
 #main(server,gateway)
 reactor.run()
-
-#mylist = [0,1,2,3,4]
-#for i in mylist:
-get()
-reactor.stop()
