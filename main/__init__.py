@@ -195,8 +195,8 @@ def interpretPopInstruction(result,gateway):
 #         print("instruction handled!")
 
 def interpretGroupsInstruction(result,server,gateway):
-        print(result)
-    if result = None or result.split(",")[5] in  HANDLED_INSTRUCTIONS:
+    print(result)
+    if result == None or result.split(",")[5] in  HANDLED_INSTRUCTIONS:
         pass
     else:
         instruction = result.split(",")
