@@ -156,7 +156,7 @@ class Gateway:
         Parameters:
         data -- the data to send
         popid -- the population ID"""
-        print("updatepop kors!")
+        #print("updatepop kors!")
         targetpop = self.getPopulation(popid)
         (uuid,major,minor,soft_reboot) = (data[0], data[1], data[2],data[3])
         for p in targetpop.members:
@@ -195,6 +195,7 @@ def createGroupsInstruction(groupids,uuid,major,minor,soft_reboot):
     return res[:-1] + "," + uuid + "," + major + "," + minor + "," + soft_reboot + "," + str(time.time() * 1000)
 
 def interpretPopInstruction(result,server,gateway):
+    print(result)
     if result == None or result == "0" or result.split(",")[0] != GATEWAY_ID or result.split(",")[6] in  HANDLED_INSTRUCTIONS:
         pass
     else:        
