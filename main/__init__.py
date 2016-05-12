@@ -186,13 +186,14 @@ def createGroupsInstruction(groupids,uuid,major,minor,soft_reboot):
     return res[:-1] + "," + uuid + "," + major + "," + minor + "," + soft_reboot + "," + str(time.time() * 1000)
 
 def interpretPopInstruction(result,gateway):
-    print(result)
-#     if result == None or result.split(",")[0] != GATEWAY_ID or result.split(",")[6] in  HANDLED_INSTRUCTIONS:
-#         print("denna galler")
-#     else:        
-#         instruction = result.split(",")
-#         gateway.updatePopulation(instruction[2:5],instruction[1])
-#         print("instruction handled!")
+    if result == None or result.split(",")[0] != GATEWAY_ID or result.split(",")[6] in  HANDLED_INSTRUCTIONS:
+        pass
+    else:
+        print(result)        
+        instruction = result.split(",")
+        HANDLED_INSTRUCTIONS += instruction[6]
+        gateway.updatePopulation(instruction[2:5],instruction[1])
+        print("instruction handled!")
 
 def interpretGroupsInstruction(result,gateway):
     print("test")
@@ -200,6 +201,7 @@ def interpretGroupsInstruction(result,gateway):
         pass
     else:
         instruction = result.split(",")
+        HANDLED_INSTRUCTIONS += instruction[5]
         groups = instruction[0].split(":")
         populationstoupdate = []
         for group in groups:
@@ -212,7 +214,6 @@ def interpretGroupsInstruction(result,gateway):
         print("instruction handled!")
 
 def kademliaPopInstructionListener(args):
-    print("lyssnar")
     server = args[0]
     gateway = args[1]
     server.get("UPDATE_POPULATION").addCallback(interpretPopInstruction,gateway) #ska returnera och lasa resultat i en annan funktion (med callback).
@@ -432,5 +433,5 @@ grouploop.start(1)
 poploop = LoopingCall(kademliaPopInstructionListener,(server,gateway))
 poploop.start(1)
 
-#main(server,gateway)
+main(server,gateway)
 reactor.run()
