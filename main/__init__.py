@@ -175,15 +175,6 @@ class SensorPopulation:
         if(values):
             for row in values:
                 self.members.append(Peripheral(row[0],ADDR_TYPE_RANDOM))
-                
-def waitAndClear(arg,instruction_type,server,gateway):
-    time.sleep(1) #is this a good value?
-    if instruction_type == GROUP_INSTRUCTION:
-        #return server.set("UPDATE_GROUPS","1").addCallback(main,server,gateway)
-        server.set("UPDATE_GROUPS","1")
-    else:
-        #return server.set("UPDATE_POPULATION","1").addCallback(main,server,gateway)
-        server.set("UPDATE_POPULATION","1")
     
 def createPopInstruction(gatewayid,popid,uuid,major,minor,soft_reboot):
     return gatewayid + "," + popid + "," + uuid + "," + major + "," + minor + "," + soft_reboot + "," + str(time.time() * 1000)
@@ -196,7 +187,7 @@ def createGroupsInstruction(groupids,uuid,major,minor,soft_reboot):
 
 def interpretPopInstruction(result,server,gateway):
     print(result)
-    if result == None or result == "0" or result.split(",")[0] != GATEWAY_ID or result.split(",")[6] in  HANDLED_INSTRUCTIONS:
+    if result == None or result.split(",")[0] != GATEWAY_ID or result.split(",")[6] in  HANDLED_INSTRUCTIONS:
         pass
     else:        
         instruction = result.split(",")
@@ -204,7 +195,7 @@ def interpretPopInstruction(result,server,gateway):
         print("instruction handled!")
 
 def interpretGroupsInstruction(result,server,gateway):
-    if result == None or result == "0" or result.split(",")[5] in  HANDLED_INSTRUCTIONS:
+    if result == None or result.split(",")[5] in  HANDLED_INSTRUCTIONS:
         pass
     else:
         instruction = result.split(",")
@@ -220,6 +211,7 @@ def interpretGroupsInstruction(result,server,gateway):
         print("instruction handled!")
 
 def kademliaPopInstructionListener(args):
+    print("lyssnar")
     server = args[0]
     gateway = args[1]
     server.get("UPDATE_POPULATION").addCallback(interpretPopInstruction,server,gateway) #ska returnera och lasa resultat i en annan funktion (med callback).
@@ -385,7 +377,7 @@ def main(server,gateway):
             popid = raw_input("Enter population ID:")
             ibeacon = raw_input("Enter data to send (as UTF-8 strings), on the form UUID:major:minor:soft_reboot_password :").split(":")
             print("Instruction sent!")
-            server.set("UPDATE_POPULATION",createPopInstruction(gatewayid, popid,ibeacon[0],ibeacon[1], ibeacon[2], ibeacon[3])).addCallback(waitAndClear,None,server,g)
+            server.set("UPDATE_POPULATION",createPopInstruction(gatewayid, popid,ibeacon[0],ibeacon[1], ibeacon[2], ibeacon[3]))
         elif responseNumber=="18" :
             print("Groups:")
             for group in g.listGroups():
