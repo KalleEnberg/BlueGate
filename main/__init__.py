@@ -196,7 +196,6 @@ def interpretPopInstruction(result,gateway):
         print("instruction handled!")
 
 def interpretGroupsInstruction(result,gateway):
-    print("test")
     if result == None or result.split(",")[5] in  HANDLED_INSTRUCTIONS:
         pass
     else:
@@ -413,7 +412,7 @@ def main(server,gateway):
             groupids = raw_input("Enter group ID:s, separated by commas:").split(",")
             ibeacon = raw_input("Enter data to send (as UTF-8 strings), on the form UUID:major:minor:soft_reboot_password :").split(":")
             print("Instructions sent!")
-            server.set("UPDATE_GROUPS",createGroupsInstruction(groupids, ibeacon[0],ibeacon[1],ibeacon[2],ibeacon[3])).addCallback(waitAndClear,GROUP_INSTRUCTION,server,g) #PROBLEM, inget skickas till servern?
+            server.set("UPDATE_GROUPS",createGroupsInstruction(groupids, ibeacon[0],ibeacon[1],ibeacon[2],ibeacon[3]))
         elif responseNumber=="25" :
             print ("Bye!")
             response = False
@@ -426,12 +425,12 @@ def main(server,gateway):
 gateway = Gateway()
 server = Server()
 server.listen(BOOTSTRAP_PORT)
-server.bootstrap([(BOOTSTRAP_IP, BOOTSTRAP_PORT)])
+server.bootstrap([(BOOTSTRAP_IP, BOOTSTRAP_PORT)]).addCallback(main,server,gateway)
  
 grouploop = LoopingCall(kademliaGroupInstructionListener,(server,gateway)) 
 grouploop.start(1)
 poploop = LoopingCall(kademliaPopInstructionListener,(server,gateway))
 poploop.start(1)
 
-main(server,gateway)
+#main(server,gateway)
 reactor.run()
