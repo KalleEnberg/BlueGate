@@ -433,8 +433,8 @@ server = Server()
 server.listen(BOOTSTRAP_PORT)
 server.bootstrap([(BOOTSTRAP_IP, BOOTSTRAP_PORT)])
 
-grouploop = LoopingCall(kademliaGroupInstructionListener,(server,gateway)) 
-grouploop.start(1)
+#grouploop = LoopingCall(kademliaGroupInstructionListener,(server,gateway)) 
+#grouploop.start(1)
 poploop = LoopingCall(kademliaPopInstructionListener,(server,gateway))
 poploop.start(1)
 
