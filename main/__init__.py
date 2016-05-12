@@ -1,5 +1,6 @@
 """Main program of the system, also contains gateway interface to user"""
 from twisted.internet import reactor
+from twisted.internet.task import LoopingCall
 from twisted.python import log
 from kademlia.network import Server
 import socket
@@ -194,18 +195,12 @@ def createGroupsInstruction(groupids,uuid,major,minor,soft_reboot):
     return res[:-1] + "," + uuid + "," + major + "," + minor + "," + soft_reboot + "," + str(time.time() * 1000)
 
 def interpretPopInstruction(result,server,gateway):
-    print("interpretkors")
-    if result != 0:
-        print("nu ska det fan inte vara noll")
-        print(result)
-    else:
-        print("0")
-#     if result == None or result == "0" or result.split(",")[0] != GATEWAY_ID or result.split(",")[6] in  HANDLED_INSTRUCTIONS:
-#         pass
-#     else:        
-#         instruction = result.split(",")
-#         gateway.updatePopulation(instruction[2:5],instruction[1])
-#         print("instruction handled!")
+    result == None or result == "0" or result.split(",")[0] != GATEWAY_ID or result.split(",")[6] in  HANDLED_INSTRUCTIONS:
+        pass
+     else:        
+        instruction = result.split(",")
+        gateway.updatePopulation(instruction[2:5],instruction[1])
+        print("instruction handled!")
 
 def interpretGroupsInstruction(result,server,gateway):
     if result == None or result == "0" or result.split(",")[5] in  HANDLED_INSTRUCTIONS:
@@ -224,16 +219,11 @@ def interpretGroupsInstruction(result,server,gateway):
         print("instruction handled!")
 
 def kademliaPopInstructionListener(server,gateway):
-    while True:
-        server.get("UPDATE_POPULATION").addCallback(interpretPopInstruction,server,gateway) #ska returnera och lasa resultat i en annan funktion (med callback).
+    server.get("UPDATE_POPULATION").addCallback(interpretPopInstruction,server,gateway) #ska returnera och lasa resultat i en annan funktion (med callback).
 def kademliaGroupInstructionListener(server,gateway):
-    while True:
-        server.get("UPDATE_GROUPS").addCallback(interpretGroupsInstruction,server,gateway)
+    server.get("UPDATE_GROUPS").addCallback(interpretGroupsInstruction,server,gateway)
                     
 def main(arg,server,gateway,first=False):
-    if first:
-        thread.start_new_thread(kademliaPopInstructionListener, (server,gateway))
-        thread.start_new_thread(kademliaGroupInstructionListener, (server,gateway))
     g = gateway
     response = True
     responseNumber = 0
@@ -424,7 +414,7 @@ def main(arg,server,gateway,first=False):
             groupids = raw_input("Enter group ID:s, separated by commas:").split(",")
             ibeacon = raw_input("Enter data to send (as UTF-8 strings), on the form UUID:major:minor:soft_reboot_password :").split(":")
             print("Instructions sent!")
-            server.set("UPDATE_GROUPS",createGroupsInstruction(groupids, ibeacon[0],ibeacon[1],ibeacon[2],ibeacon[3])).addCallback(waitAndClear,GROUP_INSTRUCTION,server,g)
+            server.set("UPDATE_GROUPS",createGroupsInstruction(groupids, ibeacon[0],ibeacon[1],ibeacon[2],ibeacon[3])).addCallback(waitAndClear,GROUP_INSTRUCTION,server,g) #PROBLEM, inget skickas till servern?
         elif responseNumber=="25" :
             print ("Bye!")
             response = False
@@ -433,8 +423,14 @@ def main(arg,server,gateway,first=False):
         g.dbconnection.close()
 #log.startLogging(sys.stdout) #ta bort kommentar for loggning i nod
 
+gateway = Gateway()
 server = Server()
 server.listen(BOOTSTRAP_PORT)
-server.bootstrap([(BOOTSTRAP_IP, BOOTSTRAP_PORT)]).addCallback(main, server,Gateway(),True)
+server.bootstrap([(BOOTSTRAP_IP, BOOTSTRAP_PORT)]).addCallback(main, server,gateway,True)
+
+grouploop = LoopingCall(kademliaGroupInstructionListener,(server,gateway,)) 
+grouploop.start(1)
+poploop = LoopingCall(kademliaPopInstructionListener,(server,gateway,))
+poploop.start(1)
 
 reactor.run()
