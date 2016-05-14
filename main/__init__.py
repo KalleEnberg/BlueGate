@@ -222,7 +222,7 @@ def kademliaGroupInstructionListener(args):
     gateway = args[1]
     server.get("UPDATE_GROUPS").addCallback(interpretGroupsInstruction,gateway)
                     
-def main(args,server,gateway):
+def main(server,gateway):
     g = gateway
     response = True
     responseNumber = 0
