@@ -30,6 +30,8 @@ class Gateway:
         self.dbconnection = self.connectToDB()
         self.bootstrap_ip = BOOTSTRAP_IP
         self.bootstrap_port = BOOTSTRAP_PORT
+        self.lastpopcommand = ""
+        self.lastgroupcommand = ""
     def listPopulationDevices(self,popid):
         """returns a list of tuples with values from population corresponding to given ID
                     
@@ -183,21 +185,22 @@ def createGroupsInstruction(groupids,uuid,major,minor,soft_reboot):
     return res[:-1] + "," + uuid + "," + major + "," + minor + "," + soft_reboot + "," + str(time.time() * 1000)
 
 def interpretPopInstruction(result,gateway):
-    if result == None or result.split(",")[0] != GATEWAY_ID or result.split(",")[6] in  HANDLED_INSTRUCTIONS:
+    if result == None or result.split(",")[0] != GATEWAY_ID or result.split(",")[6] == gateway.lastpopcommand:
         pass
     else:
         print(result)        
         instruction = result.split(",")
-        HANDLED_INSTRUCTIONS += instruction[6]
+        gateway.lastpopcommand = instruction[6]
         gateway.updatePopulation(instruction[1:6],instruction[1])
         print("instruction handled!")
 
 def interpretGroupsInstruction(result,gateway):
-    if result == None or result.split(",")[5] in  HANDLED_INSTRUCTIONS:
+    global HANDLED_INSTRUCTIONS
+    if result == None or result.split(",")[5] == gateway.lastgroupcommand:
         pass
     else:
         instruction = result.split(",")
-        HANDLED_INSTRUCTIONS += instruction[5]
+        gateway.lastgroupcommand = instruction[5]
         groups = instruction[0].split(":")
         populationstoupdate = []
         for group in groups:
@@ -421,7 +424,6 @@ def main(server,gateway):
      
 gateway = Gateway()
 server = Server()
-HANDLED_INSTRUCTIONS = []
 server.listen(BOOTSTRAP_PORT)
 server.bootstrap([(BOOTSTRAP_IP, BOOTSTRAP_PORT)])
 
