@@ -426,11 +426,11 @@ def main(args,server,gateway):
 gateway = Gateway()
 server = Server()
 server.listen(BOOTSTRAP_PORT)
-server.bootstrap([(BOOTSTRAP_IP, BOOTSTRAP_PORT)])
+server.bootstrap([(BOOTSTRAP_IP, BOOTSTRAP_PORT)]).addCallback(main,server,gateway)
 
 grouploop = LoopingCall(kademliaGroupInstructionListener,(server,gateway)) 
 grouploop.start(1)
 poploop = LoopingCall(kademliaPopInstructionListener,(server,gateway))
 poploop.start(1)
 
-reactor.run().addCallback(main,server,gateway)
+reactor.run()
