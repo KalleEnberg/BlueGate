@@ -228,7 +228,6 @@ def main(args,server,gateway,first=False):
         grouploop.start(1)
         poploop = LoopingCall(kademliaPopInstructionListener,(server,gateway))
         poploop.start(1)
-        reactor.run()
     response = True
     responseNumber = 0
     while response:
@@ -432,3 +431,5 @@ gateway = Gateway()
 server = Server()
 server.listen(BOOTSTRAP_PORT)
 server.bootstrap([(BOOTSTRAP_IP, BOOTSTRAP_PORT)]).addCallback(main,server,gateway,True)
+
+reactor.run()
