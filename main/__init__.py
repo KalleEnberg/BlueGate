@@ -213,6 +213,7 @@ def interpretGroupsInstruction(result,gateway):
         print("instruction handled!")
 
 def kademliaPopInstructionListener(args):
+    print("kors")
     server = args[0]
     gateway = args[1]
     server.get("UPDATE_POPULATION").addCallback(interpretPopInstruction,gateway) #ska returnera och lasa resultat i en annan funktion (med callback).
