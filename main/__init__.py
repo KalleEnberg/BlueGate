@@ -155,10 +155,8 @@ class Gateway:
         Parameters:
         data -- the data to send
         popid -- the population ID"""
-        print(popid)
         targetpop = self.getPopulation(popid)
-        (uuid,major,minor,soft_reboot) = (data[0], data[1], data[2],data[3])
-        print(uuid + " " + major + " " + minor + " " + soft_reboot)
+        (uuid,major,minor,soft_reboot) = (data[0].decode("hex"), data[1].decode("hex"), data[2].decode("hex"),data[3])
         for p in targetpop.members:
             p.writeCharacteristic(32,uuid)
             p.writeCharacteristic(34,major)
@@ -192,13 +190,12 @@ def interpretPopInstruction(result,gateway):
         instruction = result.split(",")
         gateway.lastpopcommand = instruction[6]
         gateway.updatePopulation(instruction[2:6],instruction[1])
-        print("instruction handled!")
+        print("population instruction handled!")
 
 def interpretGroupsInstruction(result,gateway):
     if result == None or result.split(",")[5] == gateway.lastgroupcommand:
         pass
     else:
-        print(result)
         instruction = result.split(",")
         gateway.lastgroupcommand = instruction[5]
         groups = instruction[0].split(":")
@@ -208,10 +205,8 @@ def interpretGroupsInstruction(result,gateway):
                 if(row[0] == GATEWAY_ID):
                     populationstoupdate.append(row[1])
         for population in populationstoupdate:
-            #print(population)
             gateway.updatePopulation(instruction[1:5],population)
-            print(population + "updated!")
-        print("instruction handled!")
+        print("group instruction handled!")
 
 def kademliaPopInstructionListener(args):
     server = args[0]
@@ -358,17 +353,17 @@ def main(server,gateway):
         elif responseNumber=="15" :
             #try:
             device = Peripheral(raw_input("Enter MAC of device to send to:"),ADDR_TYPE_RANDOM)
-            ibeacon = raw_input("Enter data to send (as UTF-8 strings), on the form UUID:major:minor :").split(":")
-            (uuid,major,minor) = ibeacon[0], ibeacon[1], ibeacon[2]
+            ibeacon = raw_input("Enter data to send (as hex strings, password as UTF8-string), on the form UUID:major:minor:password :").split(":")
+            (uuid,major,minor,soft_reboot) = ibeacon[0].decode("hex"), ibeacon[1].decode("hex"), ibeacon[2].decode("hex"), ibeacon[3]
             device.writeCharacteristic(32, uuid)
             device.writeCharacteristic(34, major)
             device.writeCharacteristic(36, minor)
-            device.writeCharacteristic(50, "1234abcd")
+            device.writeCharacteristic(50, soft_reboot)
             #except :
             print("Data sent!")
         elif responseNumber=="16" :
             popid = raw_input("Enter population ID:")
-            ibeacon = raw_input("Enter data to send (as UTF-8 strings), on the form UUID:major:minor:soft_reboot_password :").split(":")
+            ibeacon = raw_input("Enter data to send (as hex strings, password as UTF8-string), on the form UUID:major:minor:password :").split(":")
             #try:
             g.updatePopulation(ibeacon, popid)
             #except ProgrammingError:
@@ -377,7 +372,7 @@ def main(server,gateway):
         elif responseNumber == "17" :
             gatewayid = raw_input("Enter target gateway ID:")
             popid = raw_input("Enter population ID:")
-            ibeacon = raw_input("Enter data to send (as UTF-8 strings), on the form UUID:major:minor:soft_reboot_password :").split(":")
+            ibeacon = raw_input("Enter data to send (as hex strings, password as UTF8-string), on the form UUID:major:minor:password :").split(":")
             print("Instruction sent!")
             server.set("UPDATE_POPULATION",createPopInstruction(gatewayid, popid,ibeacon[0],ibeacon[1], ibeacon[2], ibeacon[3]))
         elif responseNumber=="18" :
@@ -411,7 +406,7 @@ def main(server,gateway):
             print("Deleted " + groupid + " from database")
         elif responseNumber=="24" :
             groupids = raw_input("Enter group ID:s, separated by commas:").split(",")
-            ibeacon = raw_input("Enter data to send (as UTF-8 strings), on the form UUID:major:minor:soft_reboot_password :").split(":")
+            ibeacon = raw_input("Enter data to send (as hex strings, password as UTF8-string), on the form UUID:major:minor:password :").split(":")
             print("Instructions sent!")
             server.set("UPDATE_GROUPS",createGroupsInstruction(groupids, ibeacon[0],ibeacon[1],ibeacon[2],ibeacon[3]))
         elif responseNumber=="25" :
