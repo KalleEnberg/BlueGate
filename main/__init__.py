@@ -157,7 +157,6 @@ class Gateway:
         popid -- the population ID"""
         targetpop = self.getPopulation(popid)
         (uuid,major,minor,soft_reboot) = (data[0], data[1], data[2],data[3])
-        print(type(soft_reboot))
         for p in targetpop.members:
             p.writeCharacteristic(32,uuid)
             p.writeCharacteristic(34,major)
