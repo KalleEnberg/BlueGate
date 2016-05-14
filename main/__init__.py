@@ -11,7 +11,6 @@ import thread
 
 
 HANDLED_INSTRUCTIONS = []
-GROUP_INSTRUCTION = 1
 """Change below values to correct values"""
 GATEWAY_ID = "bluegate1"
 BOOTSTRAP_IP = "192.168.50.111"
