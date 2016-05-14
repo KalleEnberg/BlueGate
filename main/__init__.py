@@ -9,8 +9,6 @@ from bluepymaster.bluepy.btle import *
 from mysql.connector.errors import ProgrammingError
 import thread
 
-
-HANDLED_INSTRUCTIONS = []
 """Change below values to correct values"""
 GATEWAY_ID = "bluegate1"
 BOOTSTRAP_IP = "192.168.50.111"
@@ -184,22 +182,22 @@ def createGroupsInstruction(groupids,uuid,major,minor,soft_reboot):
         res += groupid + ":"
     return res[:-1] + "," + uuid + "," + major + "," + minor + "," + soft_reboot + "," + str(time.time() * 1000)
 
-def interpretPopInstruction(result,gateway):
-    if result == None or result.split(",")[0] != GATEWAY_ID or result.split(",")[6] in  HANDLED_INSTRUCTIONS:
+def interpretPopInstruction(result,gateway,handled_instructions):
+    if result == None or result.split(",")[0] != GATEWAY_ID or result.split(",")[6] in  handled_instructions:
         pass
     else:
         print(result)        
         instruction = result.split(",")
-        HANDLED_INSTRUCTIONS += instruction[6]
+        handled_instructions += instruction[6]
         gateway.updatePopulation(instruction[2:5],instruction[1])
         print("instruction handled!")
 
-def interpretGroupsInstruction(result,gateway):
-    if result == None or result.split(",")[5] in  HANDLED_INSTRUCTIONS:
+def interpretGroupsInstruction(result,gateway,handled_instructions):
+    if result == None or result.split(",")[5] in  handled_instructions:
         pass
     else:
         instruction = result.split(",")
-        HANDLED_INSTRUCTIONS += instruction[5]
+        handled_instructions += instruction[5]
         groups = instruction[0].split(":")
         populationstoupdate = []
         for group in groups:
@@ -423,12 +421,13 @@ def main(server,gateway):
      
 gateway = Gateway()
 server = Server()
+handled_instructions = []
 server.listen(BOOTSTRAP_PORT)
 server.bootstrap([(BOOTSTRAP_IP, BOOTSTRAP_PORT)])
 
-grouploop = LoopingCall(kademliaGroupInstructionListener,(server,gateway)) 
+grouploop = LoopingCall(kademliaGroupInstructionListener,(server,gateway,handled_instructions)) 
 grouploop.start(1)
-poploop = LoopingCall(kademliaPopInstructionListener,(server,gateway))
+poploop = LoopingCall(kademliaPopInstructionListener,(server,gateway,handled_instructions))
 poploop.start(1)
 
 thread.start_new_thread(main, (server,gateway))
