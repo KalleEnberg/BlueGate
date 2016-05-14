@@ -158,13 +158,10 @@ class Gateway:
         targetpop = self.getPopulation(popid)
         (uuid,major,minor,soft_reboot) = (data[0].decode("hex"), data[1].decode("hex"), data[2].decode("hex"),data[3])
         for p in targetpop.members:
-            try:
-                p.writeCharacteristic(32,uuid)
-                p.writeCharacteristic(34,major)
-                p.writeCharacteristic(36,minor)
-                p.writeCharacteristic(50,soft_reboot)
-            except BTLEException:
-                    print("skipped" + p.address)
+            p.writeCharacteristic(32,uuid)
+            p.writeCharacteristic(34,major)
+            p.writeCharacteristic(36,minor)
+            p.writeCharacteristic(50,soft_reboot)
         return True
     
 class SensorPopulation:
@@ -175,7 +172,10 @@ class SensorPopulation:
         self.members = []
         if(values):
             for row in values:
-                self.members.append(Peripheral(row[0],ADDR_TYPE_RANDOM))
+                try:
+                    self.members.append(Peripheral(row[0],ADDR_TYPE_RANDOM))
+                except BTLEException:
+                    print("skipped" + row[0])
     
 def createPopInstruction(gatewayid,popid,uuid,major,minor,soft_reboot):
     return gatewayid + "," + popid + "," + uuid + "," + major + "," + minor + "," + soft_reboot + "," + str(time.time() * 1000)
