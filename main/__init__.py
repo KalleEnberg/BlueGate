@@ -222,13 +222,8 @@ def kademliaGroupInstructionListener(args):
     gateway = args[1]
     server.get("UPDATE_GROUPS").addCallback(interpretGroupsInstruction,gateway)
                     
-def main(args,server,gateway,first=False):
+def main(args,server,gateway):
     g = gateway
-    if first:
-        grouploop = LoopingCall(kademliaGroupInstructionListener,(server,gateway)) 
-        grouploop.start(1)
-        poploop = LoopingCall(kademliaPopInstructionListener,(server,gateway))
-        poploop.start(1)
     response = True
     responseNumber = 0
     while response:
@@ -431,6 +426,11 @@ def main(args,server,gateway,first=False):
 gateway = Gateway()
 server = Server()
 server.listen(BOOTSTRAP_PORT)
-server.bootstrap([(BOOTSTRAP_IP, BOOTSTRAP_PORT)]).addCallback(main,server,gateway,True)
+server.bootstrap([(BOOTSTRAP_IP, BOOTSTRAP_PORT)])
 
-reactor.run()
+grouploop = LoopingCall(kademliaGroupInstructionListener,(server,gateway)) 
+grouploop.start(1)
+poploop = LoopingCall(kademliaPopInstructionListener,(server,gateway))
+poploop.start(1)
+
+reactor.run().addCallback(main,server,gateway)
