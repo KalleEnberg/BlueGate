@@ -204,9 +204,8 @@ def interpretGroupsInstruction(result,gateway):
         populationstoupdate = []
         for group in groups:
             for row in gateway.listGroup(group):
-                print(row[0] + " " + row[1])
                 if(row[0] == GATEWAY_ID):
-                    populationstoupdate += row[1]
+                    populationstoupdate.append(row[1])
         for population in populationstoupdate:
             #print(population)
             gateway.updatePopulation(instruction[1:5],population)
