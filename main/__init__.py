@@ -218,7 +218,7 @@ def kademliaPopInstructionListener(args):
     gateway = args[1]
     server.get("UPDATE_POPULATION").addCallback(interpretPopInstruction,gateway) #ska returnera och lasa resultat i en annan funktion (med callback).
 def kademliaGroupInstructionListener(args):
-    print("kors också")
+    print("kors ocksa")
     server = args[0]
     gateway = args[1]
     server.get("UPDATE_GROUPS").addCallback(interpretGroupsInstruction,gateway)
