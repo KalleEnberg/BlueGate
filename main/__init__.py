@@ -182,7 +182,7 @@ def createGroupsInstruction(groupids,uuid,major,minor,soft_reboot):
         res += groupid + ":"
     return res[:-1] + "," + uuid + "," + major + "," + minor + "," + soft_reboot + "," + str(time.time() * 1000)
 
-def interpretPopInstruction(result,gateway,HANDLED_INSTRUCTIONS):
+def interpretPopInstruction(result,gateway):
     if result == None or result.split(",")[0] != GATEWAY_ID or result.split(",")[6] in  HANDLED_INSTRUCTIONS:
         pass
     else:
@@ -192,7 +192,7 @@ def interpretPopInstruction(result,gateway,HANDLED_INSTRUCTIONS):
         gateway.updatePopulation(instruction[1:6],instruction[1])
         print("instruction handled!")
 
-def interpretGroupsInstruction(result,gateway,HANDLED_INSTRUCTIONS):
+def interpretGroupsInstruction(result,gateway):
     if result == None or result.split(",")[5] in  HANDLED_INSTRUCTIONS:
         pass
     else:
