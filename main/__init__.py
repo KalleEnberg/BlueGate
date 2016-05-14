@@ -208,7 +208,7 @@ def interpretGroupsInstruction(result,gateway):
                 if(row[0] == GATEWAY_ID):
                     populationstoupdate += row[1]
         for population in populationstoupdate:
-            gateway.updatePopulation(instruction[1:4],population)
+            gateway.updatePopulation(instruction[1:5],population)
             print(population + "updated!")
         print("instruction handled!")
 
