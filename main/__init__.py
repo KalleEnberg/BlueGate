@@ -191,7 +191,7 @@ def interpretPopInstruction(result,gateway):
         print(result)        
         instruction = result.split(",")
         gateway.lastpopcommand = instruction[6]
-        gateway.updatePopulation(instruction[1:6],instruction[1])
+        gateway.updatePopulation(instruction[2:6],instruction[1])
         print("instruction handled!")
 
 def interpretGroupsInstruction(result,gateway):
