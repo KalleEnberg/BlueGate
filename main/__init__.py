@@ -188,17 +188,16 @@ def interpretPopInstruction(result,gateway):
     if result == None or result.split(",")[0] != GATEWAY_ID or result.split(",")[6] == gateway.lastpopcommand:
         pass
     else:
-        print(result)        
         instruction = result.split(",")
         gateway.lastpopcommand = instruction[6]
         gateway.updatePopulation(instruction[2:6],instruction[1])
         print("instruction handled!")
 
 def interpretGroupsInstruction(result,gateway):
-    global HANDLED_INSTRUCTIONS
     if result == None or result.split(",")[5] == gateway.lastgroupcommand:
         pass
     else:
+        print(result)
         instruction = result.split(",")
         gateway.lastgroupcommand = instruction[5]
         groups = instruction[0].split(":")
