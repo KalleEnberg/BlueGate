@@ -10,7 +10,7 @@ from mysql.connector.errors import ProgrammingError
 import thread
 
 """Change below values to correct values"""
-GATEWAY_ID = "bluegate3"
+GATEWAY_ID = "bluegate2"
 BOOTSTRAP_IP = "192.168.50.111"
 BOOTSTRAP_PORT = 8468
 
