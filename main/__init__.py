@@ -213,12 +213,10 @@ def interpretGroupsInstruction(result,gateway):
         print("instruction handled!")
 
 def kademliaPopInstructionListener(args):
-    print("kors")
     server = args[0]
     gateway = args[1]
     server.get("UPDATE_POPULATION").addCallback(interpretPopInstruction,gateway) #ska returnera och lasa resultat i en annan funktion (med callback).
 def kademliaGroupInstructionListener(args):
-    print("kors ocksa")
     server = args[0]
     gateway = args[1]
     server.get("UPDATE_GROUPS").addCallback(interpretGroupsInstruction,gateway)
@@ -427,13 +425,13 @@ def main(server,gateway):
 gateway = Gateway()
 server = Server()
 server.listen(BOOTSTRAP_PORT)
-server.bootstrap([(BOOTSTRAP_IP, BOOTSTRAP_PORT)])#.addCallback(main,server,gateway)
+server.bootstrap([(BOOTSTRAP_IP, BOOTSTRAP_PORT)])
 
 grouploop = LoopingCall(kademliaGroupInstructionListener,(server,gateway)) 
 grouploop.start(1)
 poploop = LoopingCall(kademliaPopInstructionListener,(server,gateway))
 poploop.start(1)
-#reactor.callLater(0.1,main,server,gateway)
+
 thread.start_new_thread(main, (server,gateway))
 
 reactor.run()
