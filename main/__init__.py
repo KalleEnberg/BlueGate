@@ -182,22 +182,22 @@ def createGroupsInstruction(groupids,uuid,major,minor,soft_reboot):
         res += groupid + ":"
     return res[:-1] + "," + uuid + "," + major + "," + minor + "," + soft_reboot + "," + str(time.time() * 1000)
 
-def interpretPopInstruction(result,gateway,handled_instructions):
-    if result == None or result.split(",")[0] != GATEWAY_ID or result.split(",")[6] in  handled_instructions:
+def interpretPopInstruction(result,gateway,HANDLED_INSTRUCTIONS):
+    if result == None or result.split(",")[0] != GATEWAY_ID or result.split(",")[6] in  HANDLED_INSTRUCTIONS:
         pass
     else:
         print(result)        
         instruction = result.split(",")
-        handled_instructions += instruction[6]
+        HANDLED_INSTRUCTIONS += instruction[6]
         gateway.updatePopulation(instruction[1:6],instruction[1])
         print("instruction handled!")
 
-def interpretGroupsInstruction(result,gateway,handled_instructions):
-    if result == None or result.split(",")[5] in  handled_instructions:
+def interpretGroupsInstruction(result,gateway,HANDLED_INSTRUCTIONS):
+    if result == None or result.split(",")[5] in  HANDLED_INSTRUCTIONS:
         pass
     else:
         instruction = result.split(",")
-        handled_instructions += instruction[5]
+        HANDLED_INSTRUCTIONS += instruction[5]
         groups = instruction[0].split(":")
         populationstoupdate = []
         for group in groups:
@@ -212,13 +212,11 @@ def interpretGroupsInstruction(result,gateway,handled_instructions):
 def kademliaPopInstructionListener(args):
     server = args[0]
     gateway = args[1]
-    handled_instructions = args[2]
-    server.get("UPDATE_POPULATION").addCallback(interpretPopInstruction,gateway,handled_instructions)
+    server.get("UPDATE_POPULATION").addCallback(interpretPopInstruction,gateway)
 def kademliaGroupInstructionListener(args):
     server = args[0]
     gateway = args[1]
-    handled_instructions = args[2]
-    server.get("UPDATE_GROUPS").addCallback(interpretGroupsInstruction,gateway,handled_instructions)
+    server.get("UPDATE_GROUPS").addCallback(interpretGroupsInstruction,gateway)
                     
 def main(server,gateway):
     g = gateway
@@ -423,13 +421,13 @@ def main(server,gateway):
      
 gateway = Gateway()
 server = Server()
-handled_instructions = []
+HANDLED_INSTRUCTIONS = []
 server.listen(BOOTSTRAP_PORT)
 server.bootstrap([(BOOTSTRAP_IP, BOOTSTRAP_PORT)])
 
-grouploop = LoopingCall(kademliaGroupInstructionListener,(server,gateway,handled_instructions)) 
+grouploop = LoopingCall(kademliaGroupInstructionListener,(server,gateway)) 
 grouploop.start(1)
-poploop = LoopingCall(kademliaPopInstructionListener,(server,gateway,handled_instructions))
+poploop = LoopingCall(kademliaPopInstructionListener,(server,gateway))
 poploop.start(1)
 
 thread.start_new_thread(main, (server,gateway))
