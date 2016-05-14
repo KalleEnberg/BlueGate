@@ -284,7 +284,7 @@ def main(server,gateway):
             for pop in popstodelete:
                 g.deletePopulation(pop)
         elif responseNumber=="8" :
-            """ Starts a Bluetooth LE scan and prints out the data found in the terminal, exactly what kind of data to be printed is subject to change""" #i dont get the last part 
+            """ Starts a Bluetooth LE scan and prints out the data found in the terminal, exactly what kind of data to be printed is subject to change"""
             print("Scanning for devices (10 sec)...")
             devices = g.scanner.scan()
             for dev in devices:
@@ -304,7 +304,7 @@ def main(server,gateway):
             #except ProgrammingError:
                 #print("Could not find specified population or MAC was not in hex, please check the ID/MAC")
         elif responseNumber=="11" :
-            devicestoadd = raw_input("Enter MAC addresses of devices to add, separated by colons:").split(":")
+            devicestoadd = raw_input("Enter MAC addresses of devices to add, separated by commas:").split(",")
             popid = raw_input("Enter population ID:")
             c = g.dbconnection.cursor()
             #try:
@@ -403,7 +403,6 @@ def main(server,gateway):
         elif responseNumber=="23" :
             groupid = raw_input("Enter group ID:")
             g.deleteGroup(groupid)
-            print("Deleted " + groupid + " from database")
         elif responseNumber=="24" :
             groupids = raw_input("Enter group ID:s, separated by commas:").split(",")
             ibeacon = raw_input("Enter data to send (as hex strings, password as UTF8-string), on the form UUID:major:minor:password :").split(":")
