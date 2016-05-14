@@ -155,9 +155,9 @@ class Gateway:
         Parameters:
         data -- the data to send
         popid -- the population ID"""
-        #print("updatepop kors!")
         targetpop = self.getPopulation(popid)
         (uuid,major,minor,soft_reboot) = (data[0], data[1], data[2],data[3])
+        print(soft_reboot)
         for p in targetpop.members:
             p.writeCharacteristic(32,uuid)
             p.writeCharacteristic(34,major)
