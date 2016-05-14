@@ -212,11 +212,13 @@ def interpretGroupsInstruction(result,gateway,handled_instructions):
 def kademliaPopInstructionListener(args):
     server = args[0]
     gateway = args[1]
-    server.get("UPDATE_POPULATION").addCallback(interpretPopInstruction,gateway) #ska returnera och lasa resultat i en annan funktion (med callback).
+    handled_instructions = args[2]
+    server.get("UPDATE_POPULATION").addCallback(interpretPopInstruction,gateway,handled_instructions)
 def kademliaGroupInstructionListener(args):
     server = args[0]
     gateway = args[1]
-    server.get("UPDATE_GROUPS").addCallback(interpretGroupsInstruction,gateway)
+    handled_instructions = args[2]
+    server.get("UPDATE_GROUPS").addCallback(interpretGroupsInstruction,gateway,handled_instructions)
                     
 def main(server,gateway):
     g = gateway
