@@ -155,7 +155,6 @@ class Gateway:
         Parameters:
         data -- the data to send
         popid -- the population ID"""
-        print(popid)
         targetpop = self.getPopulation(popid)
         (uuid,major,minor,soft_reboot) = (data[0], data[1], data[2],data[3])
         print(uuid + " " + major + " " + minor + " " + soft_reboot)
@@ -208,6 +207,7 @@ def interpretGroupsInstruction(result,gateway):
                 if(row[0] == GATEWAY_ID):
                     populationstoupdate += row[1]
         for population in populationstoupdate:
+            print(population)
             gateway.updatePopulation(instruction[1:5],population)
             print(population + "updated!")
         print("instruction handled!")
