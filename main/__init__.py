@@ -218,6 +218,7 @@ def kademliaPopInstructionListener(args):
     gateway = args[1]
     server.get("UPDATE_POPULATION").addCallback(interpretPopInstruction,gateway) #ska returnera och lasa resultat i en annan funktion (med callback).
 def kademliaGroupInstructionListener(args):
+    print("kors också")
     server = args[0]
     gateway = args[1]
     server.get("UPDATE_GROUPS").addCallback(interpretGroupsInstruction,gateway)
@@ -432,6 +433,6 @@ grouploop = LoopingCall(kademliaGroupInstructionListener,(server,gateway))
 grouploop.start(1)
 poploop = LoopingCall(kademliaPopInstructionListener,(server,gateway))
 poploop.start(1)
-reactor.callLater(0.1,main,server,gateway)
+#reactor.callLater(0.1,main,server,gateway)
 
 reactor.run()
