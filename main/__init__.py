@@ -432,5 +432,3 @@ gateway = Gateway()
 server = Server()
 server.listen(BOOTSTRAP_PORT)
 server.bootstrap([(BOOTSTRAP_IP, BOOTSTRAP_PORT)]).addCallback(main,server,gateway,True)
-
-#main(server,gateway) #TESTA ATT STARTA LOOPAR+REACTOR INUTI HUVUDPROGRAM, ELLER ATT HITTA NÅGON CALLONCE FÖR REACTOR SOM KALLAR HUVUDPROGRAM (addcallback funkar inte)
