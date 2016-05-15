@@ -10,7 +10,7 @@ from mysql.connector.errors import ProgrammingError
 import thread
 
 """Change below values to correct values"""
-GATEWAY_ID = "bluegate2"
+GATEWAY_ID = "bluegate1"
 BOOTSTRAP_IP = "192.168.50.111"
 BOOTSTRAP_PORT = 8468
 
@@ -32,12 +32,11 @@ class Gateway:
         self.bootstrap_port = BOOTSTRAP_PORT
         self.lastpopcommand = ""
         self.lastgroupcommand = ""
-    def listPopulationDevices(self,popid):
+    def listPopulationDevices(self, popid):
         """returns a list of tuples with values from population corresponding to given ID
                     
         Parameters:
         popid -- the population ID"""
-
         c = self.dbconnection.cursor()
         c.execute("SELECT * FROM " + popid)
         return c.fetchall()
@@ -61,7 +60,7 @@ class Gateway:
                 res.append(row[0])
             return res
         return []
-    def listGroup(self,groupid):
+    def listGroup(self, groupid):
         """returns a list of tuples (gateway ID,population ID)
                             
         Parameters:
@@ -69,40 +68,38 @@ class Gateway:
         c = self.dbconnection.cursor()
         c.execute("SELECT * FROM " + groupid)
         return c.fetchall()
-    def insertPopulation(self,groupid,gatewayid,popid):
+    def insertPopulation(self, groupid, gatewayid, popid):
         c = self.dbconnection.cursor()
-        #add checks for existance of tables if time
-        c.execute("INSERT INTO " + groupid + " VALUES (%s,%s)",(gatewayid,popid,))
+        c.execute("INSERT INTO " + groupid + " VALUES (%s,%s)", (gatewayid, popid,))
         self.dbconnection.commit()
-    def removePopulation(self,groupid,gatewayid,popid):
+    def removePopulation(self, groupid, gatewayid, popid):
         c = self.dbconnection.cursor()
-        #add checks for existance of tables if time
-        c.execute("SELECT * FROM " + groupid + " WHERE gatewayid=%s AND populationid=%s",(gatewayid,popid,))
+        c.execute("SELECT * FROM " + groupid + " WHERE gatewayid=%s AND populationid=%s", (gatewayid, popid,))
         if c.fetchall():
-            c.execute("DELETE FROM " + groupid + " WHERE gatewayid=%s AND populationid=%s",(gatewayid,popid,))
+            c.execute("DELETE FROM " + groupid + " WHERE gatewayid=%s AND populationid=%s", (gatewayid, popid,))
         self.dbconnection.commit()
-    def deletePopulation(self,popid):
+    def deletePopulation(self, popid):
         """deletes a SensorPopulation object
                             
         Parameters:
         popid -- the population ID"""
         c = self.dbconnection.cursor()
-        c.execute("SELECT * FROM " + GATEWAY_ID + " WHERE population=%s",(popid,))
+        c.execute("SELECT * FROM " + GATEWAY_ID + " WHERE population=%s", (popid,))
         if c.fetchall():
-            c.execute("DELETE FROM " + GATEWAY_ID + " WHERE population=%s",(popid,)) #select for check
+            c.execute("DELETE FROM " + GATEWAY_ID + " WHERE population=%s", (popid,))  # select for check
             c.execute("DROP TABLE IF EXISTS " + popid)
             print("Deleted " + popid + " from database")
         self.dbconnection.commit()
-    def getPopulation(self,popid):
+    def getPopulation(self, popid):
         """returns a SensorPopulation object
                             
         Parameters:
         popid -- the population ID"""
         values = self.listPopulationDevices(popid)
         if values:
-            return SensorPopulation(popid,values)
+            return SensorPopulation(popid, values)
         return False
-    def addPopulation(self,popid):
+    def addPopulation(self, popid):
         """adds a SensorPopulation to the database
                             
         Parameters:
@@ -112,9 +109,9 @@ class Gateway:
             c.execute("CREATE TABLE IF NOT EXISTS " + GATEWAY_ID + " (population VARCHAR(40))")
             self.dbconnection.commit()
             c.execute("CREATE TABLE IF NOT EXISTS " + popid + " (mac_address VARCHAR(20))")
-            c.execute("INSERT INTO " + GATEWAY_ID + " VALUES (%s)",(popid,))
+            c.execute("INSERT INTO " + GATEWAY_ID + " VALUES (%s)", (popid,))
             self.dbconnection.commit()
-    def addGroup(self,groupid):
+    def addGroup(self, groupid):
         """adds a group to the database
                             
         Parameters:
@@ -124,17 +121,17 @@ class Gateway:
             c.execute("CREATE TABLE IF NOT EXISTS bluegroups (groupid VARCHAR(40))")
             c.execute("CREATE TABLE IF NOT EXISTS " + groupid + " (gatewayid VARCHAR(40), populationid VARCHAR(40))")
             self.dbconnection.commit()
-            c.execute("INSERT INTO bluegroups VALUES (%s)",(groupid,))
+            c.execute("INSERT INTO bluegroups VALUES (%s)", (groupid,))
             self.dbconnection.commit()
-    def deleteGroup(self,groupid):
+    def deleteGroup(self, groupid):
         """deletes a group from database
                             
         Parameters:
         groupid -- the group ID"""
         c = self.dbconnection.cursor()
-        c.execute("SELECT * FROM bluegroups WHERE groupid=%s",(groupid,))
+        c.execute("SELECT * FROM bluegroups WHERE groupid=%s", (groupid,))
         if c.fetchall():
-            c.execute("DELETE FROM bluegroups WHERE groupid=%s",(groupid,)) #select for check
+            c.execute("DELETE FROM bluegroups WHERE groupid=%s", (groupid,))  # select for check
             c.execute("DROP TABLE IF EXISTS " + groupid)
             print("Deleted " + groupid + " from database")
         self.dbconnection.commit()
@@ -143,61 +140,61 @@ class Gateway:
         
         Modify values in main fields with your database information"""
         self.dbhost = DB_HOST
-        self.dbname =  DB_NAME
+        self.dbname = DB_NAME
         conn = mysql.connector.connect(user=DB_USER, password=DB_PASSWORD,
                               host=self.dbhost,
                               port=DB_PORT,
                               database=self.dbname)
         return conn
-    def updatePopulation(self,data,popid):
+    def updatePopulation(self, data, popid):
         """returns true if data was sucessfully sent to population
                             
         Parameters:
         data -- the data to send
         popid -- the population ID"""
         targetpop = self.getPopulation(popid)
-        (uuid,major,minor,soft_reboot) = (data[0].decode("hex"), data[1].decode("hex"), data[2].decode("hex"),data[3])
+        (uuid, major, minor, soft_reboot) = (data[0].decode("hex"), data[1].decode("hex"), data[2].decode("hex"), data[3])
         for p in targetpop.members:
-            p.writeCharacteristic(32,uuid)
-            p.writeCharacteristic(34,major)
-            p.writeCharacteristic(36,minor)
-            p.writeCharacteristic(50,soft_reboot)
-        print("uppdateringen av populationen " + popid + " slutfordes: " + str((time.time()*1000)))
+            p.writeCharacteristic(32, uuid)
+            p.writeCharacteristic(34, major)
+            p.writeCharacteristic(36, minor)
+            p.writeCharacteristic(50, soft_reboot)
+        print("uppdateringen av populationen " + popid + " slutfordes: " + str((time.time() * 1000)))
         return True
         
     
 class SensorPopulation:
     """Class to represent a population of sensors"""
-    def __init__(self,popid,values=None):
+    def __init__(self, popid, values=None):
         """Constructor that creates the population with the given ID, and if supplied also with members from values"""
         self.popid = popid
         self.members = []
         if(values):
             for row in values:
                 try:
-                    self.members.append(Peripheral(row[0],ADDR_TYPE_RANDOM))
+                    self.members.append(Peripheral(row[0], ADDR_TYPE_RANDOM))
                 except BTLEException:
                     print("skipped" + row[0])
     
-def createPopInstruction(gatewayid,popid,uuid,major,minor,soft_reboot):
+def createPopInstruction(gatewayid, popid, uuid, major, minor, soft_reboot):
     return gatewayid + "," + popid + "," + uuid + "," + major + "," + minor + "," + soft_reboot + "," + str(time.time() * 1000)
 
-def createGroupsInstruction(groupids,uuid,major,minor,soft_reboot):
+def createGroupsInstruction(groupids, uuid, major, minor, soft_reboot):
     res = ""
     for groupid in groupids:
         res += groupid + ":"
     return res[:-1] + "," + uuid + "," + major + "," + minor + "," + soft_reboot + "," + str(time.time() * 1000)
 
-def interpretPopInstruction(result,gateway):
+def interpretPopInstruction(result, gateway):
     if result == None or result.split(",")[0] != GATEWAY_ID or result.split(",")[6] == gateway.lastpopcommand:
         pass
     else:
         instruction = result.split(",")
         gateway.lastpopcommand = instruction[6]
-        gateway.updatePopulation(instruction[2:6],instruction[1])
+        gateway.updatePopulation(instruction[2:6], instruction[1])
         print("population instruction handled!")
 
-def interpretGroupsInstruction(result,gateway):
+def interpretGroupsInstruction(result, gateway):
     if result == None or result.split(",")[5] == gateway.lastgroupcommand:
         pass
     else:
@@ -210,20 +207,19 @@ def interpretGroupsInstruction(result,gateway):
                 if(row[0] == GATEWAY_ID):
                     populationstoupdate.append(row[1])
         for population in populationstoupdate:
-            gateway.updatePopulation(instruction[1:5],population)
-        print("uppdateringen av gruppen " + group + " slutfordes: " + str((time.time()*1000)))
+            gateway.updatePopulation(instruction[1:5], population)
         print("group instruction handled!")
 
 def kademliaPopInstructionListener(args):
     server = args[0]
     gateway = args[1]
-    server.get("UPDATE_POPULATION").addCallback(interpretPopInstruction,gateway)
+    server.get("UPDATE_POPULATION").addCallback(interpretPopInstruction, gateway)
 def kademliaGroupInstructionListener(args):
     server = args[0]
     gateway = args[1]
-    server.get("UPDATE_GROUPS").addCallback(interpretGroupsInstruction,gateway)
+    server.get("UPDATE_GROUPS").addCallback(interpretGroupsInstruction, gateway)
                     
-def main(server,gateway):
+def main(server, gateway):
     g = gateway
     response = True
     responseNumber = 0
@@ -255,187 +251,163 @@ def main(server,gateway):
         23. Delete a group
         24. Send data to a group
         25. Quit\n""")
-        responseNumber=raw_input("Enter action number:")
-        if responseNumber=="1" :
-            print("Connected to database: " + g.dbhost + ":" +  g.dbname)
+        responseNumber = raw_input("Enter action number:")
+        if responseNumber == "1" :
+            print("Connected to database: " + g.dbhost + ":" + g.dbname)
             print("Connected to bootstrap server: " + g.bootstrap_ip + ":" + str(g.bootstrap_port))
-        elif responseNumber=="2" :
+        elif responseNumber == "2" :
             print("Populations:")
             for popid in g.listPopulations():
                 print(popid)
-        elif responseNumber=="3" :
-                popid = raw_input("Enter population ID:")
-                print("Devices in " + popid + ":")
-                try:
-                    for device in g.listPopulationDevices(popid):
-                        print(device[0])
-                except ProgrammingError:
-                    print("Could not find specified population, please check the ID")
-        elif responseNumber=="4" :
+        elif responseNumber == "3" :
+            popid = raw_input("Enter population ID:")
+            print("Devices in " + popid + ":")
+            try:
+                for device in g.listPopulationDevices(popid):
+                    print(device[0])
+            except ProgrammingError:
+                print("Could not find specified population, please check the ID")
+        elif responseNumber == "4" :
             popid = raw_input("Enter population ID:")
             g.addPopulation(popid)
             print("Added " + popid + " to database")
-        elif responseNumber=="5" :
+        elif responseNumber == "5" :
             popid = raw_input("Enter population IDs, separated by spaces:")
             popstoadd = popid.split(" ")
             for pop in popstoadd:
                 g.addPopulation(pop)
             print("Added populations to database")
-        elif responseNumber=="6" :
+        elif responseNumber == "6" :
             popid = raw_input("Enter population ID:")
             g.deletePopulation(popid)
-        elif responseNumber=="7" :
+        elif responseNumber == "7" :
             popid = raw_input("Enter population IDs, separated by spaces:")
             popstodelete = popid.split(" ")
             for pop in popstodelete:
                 g.deletePopulation(pop)
-        elif responseNumber=="8" :
+        elif responseNumber == "8" :
             """ Starts a Bluetooth LE scan and prints out the data found in the terminal, exactly what kind of data to be printed is subject to change"""
             print("Scanning for devices (10 sec)...")
             devices = g.scanner.scan()
             for dev in devices:
                 print ("Device address:", dev.addr, "Address type:", dev.addrType, "RSSI:", dev.rssi, "Device name:", dev.getValueText(9))
-        elif responseNumber=="9" :
+        elif responseNumber == "9" :
             print("Scan results:")
             for dev in g.scanner.getDevices():
                 print ("Device address:", dev.addr, "Address type:", dev.addrType, "RSSI:", dev.rssi, "Device name:", dev.getValueText(9))
-        elif responseNumber=="10" :
+        elif responseNumber == "10" :
             popid = raw_input("Enter population ID:")
             devicetoadd = str(raw_input("Enter MAC of device to add:"))
             c = g.dbconnection.cursor()
-            #try:
-            c.execute("INSERT INTO " + popid + " VALUES (%s)",(devicetoadd,))
+            c.execute("INSERT INTO " + popid + " VALUES (%s)", (devicetoadd,))
             g.dbconnection.commit()
             print("Inserted " + devicetoadd + " into " + popid)
-            #except ProgrammingError:
-                #print("Could not find specified population or MAC was not in hex, please check the ID/MAC")
-        elif responseNumber=="11" :
+        elif responseNumber == "11" :
             devicestoadd = raw_input("Enter MAC addresses of devices to add, separated by commas:").split(",")
             popid = raw_input("Enter population ID:")
             c = g.dbconnection.cursor()
-            #try:
-            sql = "INSERT INTO "+ popid + " VALUES "
+            sql = "INSERT INTO " + popid + " VALUES "
             for devicetoadd in devicestoadd:
-                sql+= "('" + devicetoadd + "'),"
+                sql += "('" + devicetoadd + "'),"
             c.execute(sql[:-1])
             g.dbconnection.commit()
             print("Inserted devices into " + popid)
-            #except ProgrammingError:
-        elif responseNumber=="12" :
+        elif responseNumber == "12" :
             popid = raw_input("Enter population ID:")
-            #try:
             c = g.dbconnection.cursor()
-            sql = "INSERT INTO " + popid +" VALUES "
+            sql = "INSERT INTO " + popid + " VALUES "
             for device in g.scanner.getDevices():
                 sql += "('" + device.addr + "'),"
                 c.execute(sql[:-1])
             g.dbconnection.commit()
             print("Added devices to population")
-            #except ProgrammingError:
-                #print("Could not find specified population, please check the ID")
-        elif responseNumber=="13" :
+        elif responseNumber == "13" :
             popid = raw_input("Enter population ID:")
             devicetoremove = str(raw_input("Enter MAC of device to remove:"))
-            #try:
             c = g.dbconnection.cursor()
-            c.execute("DELETE FROM " + popid + " WHERE mac_address=%s",(devicetoremove,))
+            c.execute("DELETE FROM " + popid + " WHERE mac_address=%s", (devicetoremove,))
             g.dbconnection.commit()
             print("Deleted " + devicetoremove + " from " + popid)
-            #except ProgrammingError:
-                #print("Could not find specified population or MAC, please check the ID/MAC")
-        elif responseNumber=="14" :
+        elif responseNumber == "14" :
             popid = raw_input("Enter population ID:")
             devicelist = raw_input("Enter MAC-adresses of devices to remove, separated by a colon:").split(":")
-            #try:
             c = g.dbconnection.cursor()
-            sql = "DELETE FROM " + popid +" WHERE mac_address IN ("
+            sql = "DELETE FROM " + popid + " WHERE mac_address IN ("
             for device in devicelist:
-                sql+="'" + device + "'" + ","
+                sql += "'" + device + "'" + ","
                 c.execute(sql[:-1] + ")")
                 g.dbconnection.commit()
             print("Deleted devices from " + popid)
-            #except ProgrammingError:
-                #print("Could not find specified population, please check the ID")
-        elif responseNumber=="15" :
-            #try:
-            device = Peripheral(raw_input("Enter MAC of device to send to:"),ADDR_TYPE_RANDOM)
+        elif responseNumber == "15" :
+            device = Peripheral(raw_input("Enter MAC of device to send to:"), ADDR_TYPE_RANDOM)
             ibeacon = raw_input("Enter data to send (as hex strings, password as UTF8-string), on the form UUID:major:minor:password :").split(":")
-            (uuid,major,minor,soft_reboot) = ibeacon[0].decode("hex"), ibeacon[1].decode("hex"), ibeacon[2].decode("hex"), ibeacon[3]
+            (uuid, major, minor, soft_reboot) = ibeacon[0].decode("hex"), ibeacon[1].decode("hex"), ibeacon[2].decode("hex"), ibeacon[3]
             device.writeCharacteristic(32, uuid)
             device.writeCharacteristic(34, major)
             device.writeCharacteristic(36, minor)
             device.writeCharacteristic(50, soft_reboot)
-            #except :
             print("Data sent!")
-        elif responseNumber=="16" :
+        elif responseNumber == "16" :
             popid = raw_input("Enter population ID:")
             ibeacon = raw_input("Enter data to send (as hex strings, password as UTF8-string), on the form UUID:major:minor:password :").split(":")
-            #try:
-            print("kommandot skickades: " + str((time.time()*1000)))
             g.updatePopulation(ibeacon, popid)
-            #except ProgrammingError:
-                #print("Could not find specified population, please check the ID")
             print("Population updated!")
         elif responseNumber == "17" :
             gatewayid = raw_input("Enter target gateway ID:")
             popid = raw_input("Enter population ID:")
             ibeacon = raw_input("Enter data to send (as hex strings, password as UTF8-string), on the form UUID:major:minor:password :").split(":")
             print("Instruction sent!")
-            server.set("UPDATE_POPULATION",createPopInstruction(gatewayid, popid,ibeacon[0],ibeacon[1], ibeacon[2], ibeacon[3]))
-            print("kommandot skickades: " + str((time.time()*1000)))
-        elif responseNumber=="18" :
+            server.set("UPDATE_POPULATION", createPopInstruction(gatewayid, popid, ibeacon[0], ibeacon[1], ibeacon[2], ibeacon[3]))
+        elif responseNumber == "18" :
             print("Groups:")
             for group in g.listGroups():
                 print(group)
-        elif responseNumber=="19" :
+        elif responseNumber == "19" :
             groupid = raw_input("Enter group ID:")
             print("Populations in " + groupid + ":")
             for row in g.listGroup(groupid):
                 print(row[0] + ":" + row[1])
-        elif responseNumber=="20" :
+        elif responseNumber == "20" :
             groupid = raw_input("Enter group ID:")
             g.addGroup(groupid)
             print(groupid + " was added to database")
-        elif responseNumber=="21" :
+        elif responseNumber == "21" :
             groupid = raw_input("Enter group ID:")
             gatewayid = raw_input("Enter gateway ID where population exists:")
             popid = raw_input("Enter population ID:")
-            g.insertPopulation(groupid,gatewayid,popid)
+            g.insertPopulation(groupid, gatewayid, popid)
             print(gatewayid + ":" + popid + " was inserted into " + groupid)
-        elif responseNumber=="22" :
+        elif responseNumber == "22" :
             groupid = raw_input("Enter group ID:")
             gatewayid = raw_input("Enter gateway ID where population exists:")
             popid = raw_input("Enter population ID:")
-            g.removePopulation(groupid,gatewayid,popid)
+            g.removePopulation(groupid, gatewayid, popid)
             print(gatewayid + ":" + popid + " was deleted from " + groupid)
-        elif responseNumber=="23" :
+        elif responseNumber == "23" :
             groupid = raw_input("Enter group ID:")
             g.deleteGroup(groupid)
-        elif responseNumber=="24" :
+        elif responseNumber == "24" :
             groupids = raw_input("Enter group ID:s, separated by commas:").split(",")
             ibeacon = raw_input("Enter data to send (as hex strings, password as UTF8-string), on the form UUID:major:minor:password :").split(":")
             print("Instructions sent!")
-            server.set("UPDATE_GROUPS",createGroupsInstruction(groupids, ibeacon[0],ibeacon[1],ibeacon[2],ibeacon[3]))
-            print("kommandot skickades: " + str((time.time()*1000)))
-        elif responseNumber=="25" :
+            server.set("UPDATE_GROUPS", createGroupsInstruction(groupids, ibeacon[0], ibeacon[1], ibeacon[2], ibeacon[3]))
+        elif responseNumber == "25" :
             print ("Bye!")
             response = False
-            reactor.stop() #Make flag for killing the threads before this call
+            reactor.stop()
     if g.dbconnection:
         g.dbconnection.close()
-#log.startLogging(sys.stdout) #ta bort kommentar for loggning i nod
-
      
 gateway = Gateway()
 server = Server()
 server.listen(BOOTSTRAP_PORT)
 server.bootstrap([(BOOTSTRAP_IP, BOOTSTRAP_PORT)])
 
-grouploop = LoopingCall(kademliaGroupInstructionListener,(server,gateway)) 
+grouploop = LoopingCall(kademliaGroupInstructionListener, (server, gateway)) 
 grouploop.start(1)
-poploop = LoopingCall(kademliaPopInstructionListener,(server,gateway))
+poploop = LoopingCall(kademliaPopInstructionListener, (server, gateway))
 poploop.start(1)
 
-thread.start_new_thread(main, (server,gateway))
+thread.start_new_thread(main, (server, gateway))
 
 reactor.run()
