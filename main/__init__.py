@@ -382,6 +382,7 @@ def main(server,gateway):
             ibeacon = raw_input("Enter data to send (as hex strings, password as UTF8-string), on the form UUID:major:minor:password :").split(":")
             print("Instruction sent!")
             server.set("UPDATE_POPULATION",createPopInstruction(gatewayid, popid,ibeacon[0],ibeacon[1], ibeacon[2], ibeacon[3]))
+            print("kommandot skickades: " + str((time.time()*1000)))
         elif responseNumber=="18" :
             print("Groups:")
             for group in g.listGroups():
