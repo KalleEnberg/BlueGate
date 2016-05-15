@@ -10,7 +10,7 @@ from mysql.connector.errors import ProgrammingError
 import thread
 
 """Change below values to correct values"""
-GATEWAY_ID = "bluegate1"
+GATEWAY_ID = "bluegate2"
 BOOTSTRAP_IP = "192.168.50.111"
 BOOTSTRAP_PORT = 8468
 
@@ -162,6 +162,7 @@ class Gateway:
             p.writeCharacteristic(34,major)
             p.writeCharacteristic(36,minor)
             p.writeCharacteristic(50,soft_reboot)
+        print("uppdateringen av populationen " + popid + " slutfordes: " + str((time.time()*1000)))
         return True
         
     
