@@ -162,7 +162,9 @@ class Gateway:
             p.writeCharacteristic(34,major)
             p.writeCharacteristic(36,minor)
             p.writeCharacteristic(50,soft_reboot)
+        print("uppdateringen av populationen " + popid + " slutfordes: " + (time.time()*1000))
         return True
+        
     
 class SensorPopulation:
     """Class to represent a population of sensors"""
@@ -411,6 +413,7 @@ def main(server,gateway):
             ibeacon = raw_input("Enter data to send (as hex strings, password as UTF8-string), on the form UUID:major:minor:password :").split(":")
             print("Instructions sent!")
             server.set("UPDATE_GROUPS",createGroupsInstruction(groupids, ibeacon[0],ibeacon[1],ibeacon[2],ibeacon[3]))
+            print("kommandot skickades: " + (time.time()*1000))
         elif responseNumber=="25" :
             print ("Bye!")
             response = False
