@@ -10,7 +10,7 @@ from mysql.connector.errors import ProgrammingError
 import thread
 
 """Change below values to correct values"""
-GATEWAY_ID = "bluegate3"
+GATEWAY_ID = "bluegate2"
 BOOTSTRAP_IP = "192.168.50.111"
 BOOTSTRAP_PORT = 8468
 
@@ -162,7 +162,6 @@ class Gateway:
             p.writeCharacteristic(34,major)
             p.writeCharacteristic(36,minor)
             p.writeCharacteristic(50,soft_reboot)
-        print("uppdateringen av populationen " + popid + " slutfordes: " + (time.time()*1000))
         return True
         
     
@@ -211,6 +210,7 @@ def interpretGroupsInstruction(result,gateway):
                     populationstoupdate.append(row[1])
         for population in populationstoupdate:
             gateway.updatePopulation(instruction[1:5],population)
+        print("uppdateringen av gruppen " + group + " slutfordes: " + str((time.time()*1000)))
         print("group instruction handled!")
 
 def kademliaPopInstructionListener(args):
@@ -413,7 +413,7 @@ def main(server,gateway):
             ibeacon = raw_input("Enter data to send (as hex strings, password as UTF8-string), on the form UUID:major:minor:password :").split(":")
             print("Instructions sent!")
             server.set("UPDATE_GROUPS",createGroupsInstruction(groupids, ibeacon[0],ibeacon[1],ibeacon[2],ibeacon[3]))
-            print("kommandot skickades: " + (time.time()*1000))
+            print("kommandot skickades: " + str((time.time()*1000)))
         elif responseNumber=="25" :
             print ("Bye!")
             response = False
