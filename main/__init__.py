@@ -371,8 +371,8 @@ def main(server,gateway):
             popid = raw_input("Enter population ID:")
             ibeacon = raw_input("Enter data to send (as hex strings, password as UTF8-string), on the form UUID:major:minor:password :").split(":")
             #try:
-            g.updatePopulation(ibeacon, popid)
             print("kommandot skickades: " + str((time.time()*1000)))
+            g.updatePopulation(ibeacon, popid)
             #except ProgrammingError:
                 #print("Could not find specified population, please check the ID")
             print("Population updated!")
