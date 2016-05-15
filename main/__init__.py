@@ -10,7 +10,7 @@ from mysql.connector.errors import ProgrammingError
 import thread
 
 """Change below values to correct values"""
-GATEWAY_ID = "bluegate2"
+GATEWAY_ID = "bluegate1"
 BOOTSTRAP_IP = "192.168.50.111"
 BOOTSTRAP_PORT = 8468
 
@@ -372,6 +372,7 @@ def main(server,gateway):
             ibeacon = raw_input("Enter data to send (as hex strings, password as UTF8-string), on the form UUID:major:minor:password :").split(":")
             #try:
             g.updatePopulation(ibeacon, popid)
+            print("kommandot skickades: " + str((time.time()*1000)))
             #except ProgrammingError:
                 #print("Could not find specified population, please check the ID")
             print("Population updated!")
