@@ -173,7 +173,7 @@ class Gateway:
             uuid = p.readCharacteristic(32)
             major = p.readCharacteristic(34)
             minor = p.readCharacteristic(36)
-            c.execute("INSERT INTO " + GATEWAY_ID + "log VALUES (%s,%s,%s,%s,%s,%s)", (popid,p.addr,uuid,major,minor,time.time()))
+            c.execute("INSERT INTO " + (GATEWAY_ID+"log") + " VALUES (%s,%s,%s,%s,%s,%s)", (popid,p.addr,uuid,major,minor,time.time()))
         self.dbconnection.commit()
     
 class SensorPopulation:
@@ -415,7 +415,7 @@ def main(server, gateway):
             server.set("UPDATE_GROUPS", createGroupsInstruction(groupids, ibeacon[0], ibeacon[1], ibeacon[2], ibeacon[3]))
         elif responseNumber == "25":
             c = g.dbconnection.cursor()
-            c.execute("CREATE TABLE IF NOT EXISTS " + GATEWAY_ID + "log (population VARCHAR(40),device_addr VARCHAR(40),uuid VARCHAR(40),major VARCHAR(40),minor VARCHAR(40),time VARCHAR(40)")
+            c.execute("CREATE TABLE IF NOT EXISTS " + (GATEWAY_ID+"log") + " (population VARCHAR(40),device_addr VARCHAR(40),uuid VARCHAR(40),major VARCHAR(40),minor VARCHAR(40),time VARCHAR(40)")
             g.dbconnection.commit()
             g.logging = True
             thread.start_new_thread(logthread, (g))
@@ -426,7 +426,7 @@ def main(server, gateway):
         elif responseNumber == "27":
             print("logged values of populations in " + GATEWAY_ID)
             c = g.dbconnection.cursor()
-            c.execute("SELECT * FROM " + GATEWAY_ID + "log")
+            c.execute("SELECT * FROM " + (GATEWAY_ID + "log"))
             for row in c.fetchall():
                 print(row)
         elif responseNumber == "28" :
