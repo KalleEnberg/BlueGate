@@ -430,7 +430,7 @@ def main(server, gateway):
             c = g.dbconnection.cursor()
             c.execute("SELECT * FROM " + GATEWAY_ID + "log")
             for row in c.fetchall():
-                print(row[0] + "    " + row[1] + "    " + row[2] + "    " + row[3] + "    " + row[4] + "    " + datetime.datetime.fromtimestamp(float(row[5])))
+                print(row[0] + "    " + row[1] + "    " + row[2] + "    " + row[3] + "    " + row[4] + "    " + datetime.datetime.fromtimestamp(float(row[5])).strftime('%Y-%m-%d %H:%M:%S'))
             print("\n") 
         elif responseNumber == "27":
             c = g.dbconnection.cursor()
