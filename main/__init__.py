@@ -418,7 +418,7 @@ def main(server, gateway):
             c.execute("CREATE TABLE IF NOT EXISTS " + GATEWAY_ID + "log (population VARCHAR(40),device_addr VARCHAR(40),uuid VARCHAR(40),major VARCHAR(40),minor VARCHAR(40),time VARCHAR(40))")
             g.dbconnection.commit()
             g.logging = True
-            thread.start_new_thread(logthread, (g))
+            thread.start_new_thread(logthread, (g,))
             print("Logging started!")
         elif responseNumber == "26":
             g.logging = False
