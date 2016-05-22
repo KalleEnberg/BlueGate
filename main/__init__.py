@@ -171,7 +171,6 @@ class Gateway:
         targetpop = self.getPopulation(popid)
         try:
             for p in targetpop.members:
-                print(p.addr)
                 uuid = p.readCharacteristic(32)
                 major = p.readCharacteristic(34)
                 minor = p.readCharacteristic(36)
