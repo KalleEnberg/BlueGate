@@ -240,7 +240,7 @@ def kademliaGroupInstructionListener(args):
     server.get("UPDATE_GROUPS").addCallback(interpretGroupsInstruction, gateway)
     
 def logthread(gateway):
-    while LOGGING:
+    while True:
         for popid in gateway.listPopulations():
             gateway.logPopulation(popid)
         time.sleep(1)    
