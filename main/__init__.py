@@ -11,7 +11,7 @@ import thread
 
 """Change below values to correct values"""
 GATEWAY_ID = "bluegate1"
-BOOTSTRAP_IP = "192.168.50.111"
+BOOTSTRAP_IP = "192.168.50.103"
 BOOTSTRAP_PORT = 8468
 
 DB_HOST = "atlas.dsv.su.se"
