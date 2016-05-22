@@ -173,6 +173,7 @@ class Gateway:
             uuid = p.readCharacteristic(32)
             major = p.readCharacteristic(34)
             minor = p.readCharacteristic(36)
+            p.writeCharacteristic(50, "1234abcd")
             print(p.addr)
             print(uuid)
             print(major)
