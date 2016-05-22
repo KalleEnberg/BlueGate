@@ -9,7 +9,6 @@ from bluepymaster.bluepy.btle import *
 from mysql.connector.errors import ProgrammingError
 import thread
 
-LOGGING = False
 """Change below values to correct values"""
 GATEWAY_ID = "bluegate1"
 BOOTSTRAP_IP = "192.168.50.103"
@@ -277,8 +276,8 @@ def main(server, gateway):
         23. Delete a group
         24. Send data to a group
         25. Start logging values of all local populations
-        26. Stop logging values of all local populations
-        27. Read the log of local populations
+        26. Read the log of local populations
+        27. Clear the log of local populations
         28. Quit\n""")
         responseNumber = raw_input("Enter action number:")
         if responseNumber == "1" :
@@ -424,13 +423,9 @@ def main(server, gateway):
             c = g.dbconnection.cursor()
             c.execute("CREATE TABLE IF NOT EXISTS " + GATEWAY_ID + "log (population VARCHAR(40),device_addr VARCHAR(40),uuid VARCHAR(40),major VARCHAR(40),minor VARCHAR(40),time VARCHAR(40))")
             g.dbconnection.commit()
-            LOGGING = True
             thread.start_new_thread(logthread, (g,))
             print("Logging started!")
         elif responseNumber == "26":
-            LOGGING = False
-            print("Logging stopped!")
-        elif responseNumber == "27":
             print("logged values of populations in " + GATEWAY_ID)
             c = g.dbconnection.cursor()
             c.execute("SELECT * FROM " + GATEWAY_ID + "log")
@@ -438,6 +433,10 @@ def main(server, gateway):
                 for column in row:
                     print(column + "    ")
             print("\n") 
+        elif responseNumber == "27":
+            c = g.dbconnection.cursor()
+            c.execute("TRUNCATE TABLE " + GATEWAY_ID + "log")
+            print("log cleared!")
         elif responseNumber == "28" :
             print ("Bye!")
             response = False
