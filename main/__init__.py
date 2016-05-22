@@ -174,7 +174,11 @@ class Gateway:
             major = p.readCharacteristic(34)
             minor = p.readCharacteristic(36)
             print(p.addr)
-            print("loggar" + popid + " " + uuid + " " + major + " " + minor + " " + time.time())
+            print(uuid)
+            print(major)
+            print(minor)
+            print(time.time())
+            #print("loggar" + popid + " " + uuid + " " + major + " " + minor + " " + time.time())
             c.execute("INSERT INTO " + GATEWAY_ID + "log VALUES (%s,%s,%s,%s,%s,%s)", (popid,p.addr,uuid,major,minor,time.time()))
         self.dbconnection.commit()
     
