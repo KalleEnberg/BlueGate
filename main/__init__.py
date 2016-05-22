@@ -241,9 +241,12 @@ def kademliaGroupInstructionListener(args):
     
 def logthread(gateway):
     while True:
-        for popid in gateway.listPopulations():
-            gateway.logPopulation(popid)
-        time.sleep(1)    
+        try:
+            for popid in gateway.listPopulations():
+                gateway.logPopulation(popid)
+            time.sleep(1)
+        except:
+            print("skipped logging")    
 def main(server, gateway):
     g = gateway
     response = True
@@ -440,6 +443,7 @@ def main(server, gateway):
             print ("Bye!")
             response = False
             reactor.stop()
+            thread
     if g.dbconnection:
         g.dbconnection.close()
      
