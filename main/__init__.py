@@ -11,18 +11,18 @@ import thread
 import datetime
 
 """Change below values to correct values"""
-GATEWAY_ID = "bluegate1"
-BOOTSTRAP_IP = "192.168.50.103"
-BOOTSTRAP_PORT = 8468
+GATEWAY_ID = ""
+BOOTSTRAP_IP = ""
+BOOTSTRAP_PORT = 0000
 
-DB_HOST = "atlas.dsv.su.se"
-DB_PORT = 3306
-DB_NAME = "db_15482139"
-DB_USER = "usr_15482139"
-DB_PASSWORD = "482139"
+DB_HOST = ""
+DB_PORT = 0000
+DB_NAME = ""
+DB_USER = ""
+DB_PASSWORD = ""
 
 class Gateway:
-    """Main class for communication between user program and the system""" 
+    """Main class for communication between user program and the BLE sensors""" 
     def __init__(self):
         """Constructor that initializes the class attributes"""
         self.id = GATEWAY_ID
@@ -71,17 +71,29 @@ class Gateway:
         c.execute("SELECT * FROM " + groupid)
         return c.fetchall()
     def insertPopulation(self, groupid, gatewayid, popid):
+        """inserts a population into a group (database table)
+                            
+        Parameters:
+        groupid -- the group ID
+        gatewayid -- the gateway ID
+        popid -- the population ID"""
         c = self.dbconnection.cursor()
         c.execute("INSERT INTO " + groupid + " VALUES (%s,%s)", (gatewayid, popid,))
         self.dbconnection.commit()
     def removePopulation(self, groupid, gatewayid, popid):
+        """removes a population from a group (database table)
+                            
+        Parameters:
+        groupid -- the group ID
+        gatewayid -- the gateway ID
+        popid -- the population ID"""
         c = self.dbconnection.cursor()
         c.execute("SELECT * FROM " + groupid + " WHERE gatewayid=%s AND populationid=%s", (gatewayid, popid,))
         if c.fetchall():
             c.execute("DELETE FROM " + groupid + " WHERE gatewayid=%s AND populationid=%s", (gatewayid, popid,))
         self.dbconnection.commit()
     def deletePopulation(self, popid):
-        """deletes a SensorPopulation object
+        """deletes a SensorPopulation object from database
                             
         Parameters:
         popid -- the population ID"""
@@ -196,15 +208,37 @@ class SensorPopulation:
                     print("skipped " + row[0])
     
 def createPopInstruction(gatewayid, popid, uuid, major, minor, soft_reboot):
+    """returns an population update instruction string based on data from parameters
+                            
+    Parameters:
+    gatewayid -- the gateway ID
+    popid -- the population ID
+    uuid -- the UUID value
+    major -- the major value
+    minor -- the minor value
+    soft_reboot -- the soft reboot password"""
     return gatewayid + "," + popid + "," + uuid + "," + major + "," + minor + "," + soft_reboot + "," + str(time.time() * 1000)
 
 def createGroupsInstruction(groupids, uuid, major, minor, soft_reboot):
+    """returns an groups update instruction string based on data from parameters
+                            
+    Parameters:
+    groupsids -- a list of groupids
+    uuid -- the UUID value
+    major -- the major value
+    minor -- the minor value
+    soft_reboot -- the soft reboot password"""
     res = ""
     for groupid in groupids:
         res += groupid + ":"
     return res[:-1] + "," + uuid + "," + major + "," + minor + "," + soft_reboot + "," + str(time.time() * 1000)
 
 def interpretPopInstruction(result, gateway):
+    """interprets incoming population instructions, updates specified population with supplied values if it is a local population.
+                            
+    Parameters:
+    result -- the result of the kademlia get command
+    gateway -- the local gateway to perform updates"""
     if result == None or result.split(",")[0] != GATEWAY_ID or result.split(",")[6] == gateway.lastpopcommand:
         pass
     else:
@@ -214,6 +248,11 @@ def interpretPopInstruction(result, gateway):
         print("population instruction handled!")
 
 def interpretGroupsInstruction(result, gateway):
+    """interprets incoming group instructions, updates all local populations in specified groups with supplied values.
+                            
+    Parameters:
+    result -- the result of the kademlia get command
+    gateway -- the local gateway to perform updates"""
     if result == None or result.split(",")[5] == gateway.lastgroupcommand:
         pass
     else:
@@ -230,16 +269,28 @@ def interpretGroupsInstruction(result, gateway):
         print("group instruction handled!")
 
 def kademliaPopInstructionListener(args):
+    """kademlia listener that performs a query of the latest population instruction, and sends the result to interpretPopInstruction.
+                            
+    Parameters:
+    args -- tuple of server and gateway objects"""
     server = args[0]
     gateway = args[1]
     server.get("UPDATE_POPULATION").addCallback(interpretPopInstruction, gateway)
     
 def kademliaGroupInstructionListener(args):
+    """kademlia listener that performs a query of the latest group instruction, and sends the result to interpretGroupsInstruction.
+                            
+    Parameters:
+    args -- tuple of server and gateway objects"""
     server = args[0]
     gateway = args[1]
     server.get("UPDATE_GROUPS").addCallback(interpretGroupsInstruction, gateway)
     
 def logthread(gateway):
+    """function that reads values from all local connectable BLE devices and logs it in database.
+                            
+    Parameters:
+    gateway -- the local gateway to perform reads"""
     while True:
         try:
             for popid in gateway.listPopulations():
@@ -446,7 +497,7 @@ def main(server, gateway):
             thread
     if g.dbconnection:
         g.dbconnection.close()
-     
+#Program initialization, starts two kademlia listeners and then the main program.
 gateway = Gateway()
 server = Server()
 server.listen(BOOTSTRAP_PORT)
