@@ -8,6 +8,7 @@ import mysql.connector
 from bluepymaster.bluepy.btle import *
 from mysql.connector.errors import ProgrammingError
 import thread
+import datetime
 
 """Change below values to correct values"""
 GATEWAY_ID = "bluegate1"
@@ -429,8 +430,7 @@ def main(server, gateway):
             c = g.dbconnection.cursor()
             c.execute("SELECT * FROM " + GATEWAY_ID + "log")
             for row in c.fetchall():
-                for column in row:
-                    print(column + "    ")
+                print(row[0] + "    " + row[1] + "    " + row[2] + "    " + row[3] +  + "    " + row[4] + "    " + datetime.datetime.fromtimestamp(row[5]))
             print("\n") 
         elif responseNumber == "27":
             c = g.dbconnection.cursor()
