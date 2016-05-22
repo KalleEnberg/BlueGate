@@ -428,7 +428,9 @@ def main(server, gateway):
             c = g.dbconnection.cursor()
             c.execute("SELECT * FROM " + GATEWAY_ID + "log")
             for row in c.fetchall():
-                print(row)
+                for column in row:
+                    print(column + "    ")
+            print("\n") 
         elif responseNumber == "28" :
             print ("Bye!")
             response = False
