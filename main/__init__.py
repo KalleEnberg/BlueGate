@@ -32,6 +32,7 @@ class Gateway:
         self.bootstrap_port = BOOTSTRAP_PORT
         self.lastpopcommand = ""
         self.lastgroupcommand = ""
+        self.logging = False
     def listPopulationDevices(self, popid):
         """returns a list of tuples with values from population corresponding to given ID
                     
@@ -159,9 +160,21 @@ class Gateway:
             p.writeCharacteristic(34, major)
             p.writeCharacteristic(36, minor)
             p.writeCharacteristic(50, soft_reboot)
-        print("uppdateringen av populationen " + popid + " slutfordes: " + str((time.time() * 1000)))
+        print("update of population " + popid + " completed: " + str((time.time() * 1000)))
         return True
-        
+    def logPopulation(self, popid):
+        """Logs values of peripherals in population to database
+                            
+        Parameters:
+        popid -- the population ID"""
+        c = self.dbconnection.cursor()
+        targetpop = self.getPopulation(popid)
+        for p in targetpop.members:
+            uuid = p.readCharacteristic(32)
+            major = p.readCharacteristic(34)
+            minor = p.readCharacteristic(36)
+            c.execute("INSERT INTO " + GATEWAY_ID + "log VALUES (%s,%s,%s,%s,%s,%s)", (popid,p.addr,uuid,major,minor,time.time()))
+        self.dbconnection.commit()
     
 class SensorPopulation:
     """Class to represent a population of sensors"""
@@ -214,11 +227,17 @@ def kademliaPopInstructionListener(args):
     server = args[0]
     gateway = args[1]
     server.get("UPDATE_POPULATION").addCallback(interpretPopInstruction, gateway)
+    
 def kademliaGroupInstructionListener(args):
     server = args[0]
     gateway = args[1]
     server.get("UPDATE_GROUPS").addCallback(interpretGroupsInstruction, gateway)
-                    
+    
+def logthread(gateway):
+    while gateway.logging:
+        for popid in gateway.listPopulations():
+            gateway.logPopulation(popid)
+        time.sleep(1)    
 def main(server, gateway):
     g = gateway
     response = True
@@ -250,7 +269,10 @@ def main(server, gateway):
         22. Delete a population from a group
         23. Delete a group
         24. Send data to a group
-        25. Quit\n""")
+        25. Start logging values of all local populations
+        26. Stop logging values of all local populations
+        27. Read the log of local populations
+        28. Quit\n""")
         responseNumber = raw_input("Enter action number:")
         if responseNumber == "1" :
             print("Connected to database: " + g.dbhost + ":" + g.dbname)
@@ -391,7 +413,23 @@ def main(server, gateway):
             ibeacon = raw_input("Enter data to send (as hex strings, password as UTF8-string), on the form UUID:major:minor:password :").split(":")
             print("Instructions sent!")
             server.set("UPDATE_GROUPS", createGroupsInstruction(groupids, ibeacon[0], ibeacon[1], ibeacon[2], ibeacon[3]))
-        elif responseNumber == "25" :
+        elif responseNumber == "25":
+            c = g.dbconnection.cursor()
+            c.execute("CREATE TABLE IF NOT EXISTS " + GATEWAY_ID + "log (population VARCHAR(40),device_addr VARCHAR(40),uuid VARCHAR(40),major VARCHAR(40),minor VARCHAR(40),time VARCHAR(40)")
+            g.dbconnection.commit()
+            g.logging = True
+            thread.start_new_thread(logthread, (g))
+            print("Logging started!")
+        elif responseNumber == "26":
+            g.logging = False
+            print("Logging stopped!")
+        elif responseNumber == "27":
+            print("logged values of populations in " + GATEWAY_ID)
+            c = g.dbconnection.cursor()
+            c.execute("SELECT * FROM " + GATEWAY_ID + "log")
+            for row in c.fetchall():
+                print(row)
+        elif responseNumber == "28" :
             print ("Bye!")
             response = False
             reactor.stop()
