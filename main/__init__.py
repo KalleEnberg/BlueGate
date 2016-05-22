@@ -173,7 +173,8 @@ class Gateway:
             uuid = p.readCharacteristic(32)
             major = p.readCharacteristic(34)
             minor = p.readCharacteristic(36)
-            print("loggar" + popid + " " + str(p.addr) + " " + uuid + " " + major + " " + minor + " " + time.time())
+            print(p.addr)
+            print("loggar" + popid + " " + uuid + " " + major + " " + minor + " " + time.time())
             c.execute("INSERT INTO " + GATEWAY_ID + "log VALUES (%s,%s,%s,%s,%s,%s)", (popid,p.addr,uuid,major,minor,time.time()))
         self.dbconnection.commit()
     
@@ -188,7 +189,7 @@ class SensorPopulation:
                 try:
                     self.members.append(Peripheral(row[0], ADDR_TYPE_RANDOM))
                 except BTLEException:
-                    print("skipped" + row[0])
+                    print("skipped " + row[0])
     
 def createPopInstruction(gatewayid, popid, uuid, major, minor, soft_reboot):
     return gatewayid + "," + popid + "," + uuid + "," + major + "," + minor + "," + soft_reboot + "," + str(time.time() * 1000)
