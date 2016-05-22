@@ -169,19 +169,23 @@ class Gateway:
         popid -- the population ID"""
         c = self.dbconnection.cursor()
         targetpop = self.getPopulation(popid)
-        for p in targetpop.members:
-            uuid = p.readCharacteristic(32)
-            major = p.readCharacteristic(34)
-            minor = p.readCharacteristic(36)
-            p.writeCharacteristic(50, "1234abcd")
-            print(p.addr)
-            print(uuid)
-            print(major)
-            print(minor)
-            print(time.time())
+        try:
+            for p in targetpop.members:
+                uuid = p.readCharacteristic(32)
+                major = p.readCharacteristic(34)
+                minor = p.readCharacteristic(36)
+                p.writeCharacteristic(50, "1234abcd")
+                print(p.addr)
+                print(uuid)
+                print(major)
+                print(minor)
+                print(time.time())
             #print("loggar" + popid + " " + uuid + " " + major + " " + minor + " " + time.time())
-            c.execute("INSERT INTO " + GATEWAY_ID + "log VALUES (%s,%s,%s,%s,%s,%s)", (popid,p.addr,uuid,major,minor,time.time()))
-        self.dbconnection.commit()
+                c.execute("INSERT INTO " + GATEWAY_ID + "log VALUES (%s,%s,%s,%s,%s,%s)", (popid,p.addr,uuid,major,minor,time.time()))
+                self.dbconnection.commit()
+        except BTLEException:
+            print("skipped unconnected device")
+        
     
 class SensorPopulation:
     """Class to represent a population of sensors"""
