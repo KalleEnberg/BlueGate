@@ -319,8 +319,10 @@ class Peripheral(BluepyHelper):
         
 
         if isinstance(deviceAddr, ScanEntry):
+            self.addr = deviceAddr
             self.connect(deviceAddr.addr, deviceAddr.addrType, deviceAddr.iface)
         elif deviceAddr is not None:
+            self.addr = deviceAddr
             self.connect(deviceAddr, addrType, iface)
 
     def setDelegate(self, delegate_): # same as withDelegate(), deprecated
