@@ -9,6 +9,7 @@ from bluepymaster.bluepy.btle import *
 from mysql.connector.errors import ProgrammingError
 import thread
 
+LOGGING = False
 """Change below values to correct values"""
 GATEWAY_ID = "bluegate1"
 BOOTSTRAP_IP = "192.168.50.103"
@@ -240,7 +241,7 @@ def kademliaGroupInstructionListener(args):
     server.get("UPDATE_GROUPS").addCallback(interpretGroupsInstruction, gateway)
     
 def logthread(gateway):
-    while gateway.logging:
+    while LOGGING:
         for popid in gateway.listPopulations():
             gateway.logPopulation(popid)
         time.sleep(1)    
@@ -423,11 +424,11 @@ def main(server, gateway):
             c = g.dbconnection.cursor()
             c.execute("CREATE TABLE IF NOT EXISTS " + GATEWAY_ID + "log (population VARCHAR(40),device_addr VARCHAR(40),uuid VARCHAR(40),major VARCHAR(40),minor VARCHAR(40),time VARCHAR(40))")
             g.dbconnection.commit()
-            g.logging = True
+            LOGGING = True
             thread.start_new_thread(logthread, (g,))
             print("Logging started!")
         elif responseNumber == "26":
-            g.logging = False
+            LOGGING = False
             print("Logging stopped!")
         elif responseNumber == "27":
             print("logged values of populations in " + GATEWAY_ID)
