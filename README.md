@@ -25,4 +25,4 @@
 ####* Possibility to read data from files, or streams rather then user input
 ####* Improve the logging of values in the sensors
 ####* Web interface
-####For questions regarding BlueGate, send an email to inital authors marcus.steveling@gmail.com or kalle.enberg@gmail.com.
+####For questions regarding BlueGate, send an email to inital authors marcus.stevelind@gmail.com or kalle.enberg@gmail.com.
