@@ -100,7 +100,7 @@ class Gateway:
         c = self.dbconnection.cursor()
         c.execute("SELECT * FROM " + GATEWAY_ID + " WHERE population=%s", (popid,))
         if c.fetchall():
-            c.execute("DELETE FROM " + GATEWAY_ID + " WHERE population=%s", (popid,))  # select for check
+            c.execute("DELETE FROM " + GATEWAY_ID + " WHERE population=%s", (popid,))
             c.execute("DROP TABLE IF EXISTS " + popid)
             print("Deleted " + popid + " from database")
         self.dbconnection.commit()
@@ -145,7 +145,7 @@ class Gateway:
         c = self.dbconnection.cursor()
         c.execute("SELECT * FROM bluegroups WHERE groupid=%s", (groupid,))
         if c.fetchall():
-            c.execute("DELETE FROM bluegroups WHERE groupid=%s", (groupid,))  # select for check
+            c.execute("DELETE FROM bluegroups WHERE groupid=%s", (groupid,))
             c.execute("DROP TABLE IF EXISTS " + groupid)
             print("Deleted " + groupid + " from database")
         self.dbconnection.commit()
@@ -187,7 +187,7 @@ class Gateway:
                 uuid = p.readCharacteristic(32)
                 major = p.readCharacteristic(34)
                 minor = p.readCharacteristic(36)
-                p.writeCharacteristic(50, "1234abcd")
+                # p.writeCharacteristic(x, "") optional soft reboot password in order to not discard read values 
                 c.execute("INSERT INTO " + GATEWAY_ID + "log VALUES (%s,%s,%s,%s,%s,%s)", (popid,p.addr,uuid,major,minor,time.time()))
                 self.dbconnection.commit()
         except BTLEException:
@@ -502,12 +502,12 @@ gateway = Gateway()
 server = Server()
 server.listen(BOOTSTRAP_PORT)
 server.bootstrap([(BOOTSTRAP_IP, BOOTSTRAP_PORT)])
-
+ 
 grouploop = LoopingCall(kademliaGroupInstructionListener, (server, gateway)) 
 grouploop.start(1)
 poploop = LoopingCall(kademliaPopInstructionListener, (server, gateway))
 poploop.start(1)
 
-thread.start_new_thread(main, (server, gateway))
+thread.start_new_thread(main, ("server", gateway))
 
 reactor.run()
