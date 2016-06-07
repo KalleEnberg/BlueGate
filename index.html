@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-dark.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print">
+
+    <title>Bluegate by KalleEnberg</title>
+  </head>
+
+  <body>
+
+    <header>
+      <div class="container">
+        <h1>Bluegate</h1>
+        <h2>BlueGate - A gateway solution for Bluetooth Low Energy Wireless Sensor Networks</h2>
+
+        <section id="downloads">
+          <a href="https://github.com/KalleEnberg/BlueGate/zipball/master" class="btn">Download as .zip</a>
+          <a href="https://github.com/KalleEnberg/BlueGate/tarball/master" class="btn">Download as .tar.gz</a>
+          <a href="https://github.com/KalleEnberg/BlueGate" class="btn btn-github"><span class="icon"></span>View on GitHub</a>
+        </section>
+      </div>
+    </header>
+
+    <div class="container">
+      <section id="main_content">
+        <h1>
+<a id="bluegate---a-gateway-solution-for-bluetooth-low-energy-wireless-sensor-networks" class="anchor" href="#bluegate---a-gateway-solution-for-bluetooth-low-energy-wireless-sensor-networks" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>BlueGate - A gateway solution for Bluetooth Low Energy Wireless Sensor Networks</h1>
+
+<h2>
+<a id="notice-this-project-is-not-a-release-version-and-is-in-need-of-further-development-before-usage" class="anchor" href="#notice-this-project-is-not-a-release-version-and-is-in-need-of-further-development-before-usage" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><em>Notice! This project is not a release version and is in need of further development before usage!</em>
+</h2>
+
+<h2>
+<a id="we-ask-whoever-interested-to-fork-this-repository-for-further-development-as-it-is-unsure-if-the-initial-authors-will-continue-the-development-completed-study-course" class="anchor" href="#we-ask-whoever-interested-to-fork-this-repository-for-further-development-as-it-is-unsure-if-the-initial-authors-will-continue-the-development-completed-study-course" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><em>We ask whoever interested to fork this repository for further development, as it is unsure if the initial authors will continue the development (completed study course)</em>
+</h2>
+
+<h4>
+<a id="bluegate-is-a-python-gateway-interface-meant-to-run-in-a-kademlia-network-with-access-to-a-mysql-database-for-storing-data-bluegate-provides-a-cli-for-the-user-to-organize-and-group-ble-sensors-read-and-log-values-of-these-sensors-and-to-update-information-in-them-using-gatt-protocol-bluegate-provides-an-example-of-combining-kademlia-and-bluepy-in-order-to-create-a-gateway-solution-hopefully-suitable-for-larger-wsns" class="anchor" href="#bluegate-is-a-python-gateway-interface-meant-to-run-in-a-kademlia-network-with-access-to-a-mysql-database-for-storing-data-bluegate-provides-a-cli-for-the-user-to-organize-and-group-ble-sensors-read-and-log-values-of-these-sensors-and-to-update-information-in-them-using-gatt-protocol-bluegate-provides-an-example-of-combining-kademlia-and-bluepy-in-order-to-create-a-gateway-solution-hopefully-suitable-for-larger-wsns" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>BlueGate is a Python gateway interface meant to run in a Kademlia network with access to a MySQL database for storing data. BlueGate provides a CLI for the user to organize and group BLE sensors, read and log values of these sensors, and to update information in them (using GATT protocol). BlueGate provides an example of combining Kademlia and bluepy in order to create a gateway solution hopefully suitable for larger WSN:s.</h4>
+
+<h4>
+<a id="bluegate-is-built-upon-and-currently-has-the-following-dependencies" class="anchor" href="#bluegate-is-built-upon-and-currently-has-the-following-dependencies" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>BlueGate is built upon and currently has the following dependencies:</h4>
+
+<h4>
+<a id="-a-working-internet-connection" class="anchor" href="#-a-working-internet-connection" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>* A working Internet connection</h4>
+
+<h4>
+<a id="-a-running-kademlia-network-at-a-minimum-a-running-server" class="anchor" href="#-a-running-kademlia-network-at-a-minimum-a-running-server" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>* A running Kademlia network (at a minimum a running server)</h4>
+
+<h4>
+<a id="-a-running-mysql-database-with-appropriate-privilieges-add-and-drop-tables" class="anchor" href="#-a-running-mysql-database-with-appropriate-privilieges-add-and-drop-tables" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>* A running MySQL database with appropriate privilieges (add and drop tables)</h4>
+
+<h4>
+<a id="-a-working-ble-interface-for-example-a-ble-dongle" class="anchor" href="#-a-working-ble-interface-for-example-a-ble-dongle" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>* A working BLE interface (for example a BLE dongle)</h4>
+
+<h4>
+<a id="-a-linux-distribution-developed-and-tested-on-linux-debian-raspbian" class="anchor" href="#-a-linux-distribution-developed-and-tested-on-linux-debian-raspbian" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>* A Linux distribution (developed and tested on Linux debian (raspbian))</h4>
+
+<h4>
+<a id="-an-installed-version-of-the-following-packages-kademlia-bmuller-python-twistedmysql-connector-python-bluez-with-related-packages-bluepy-and-libglib20-dev" class="anchor" href="#-an-installed-version-of-the-following-packages-kademlia-bmuller-python-twistedmysql-connector-python-bluez-with-related-packages-bluepy-and-libglib20-dev" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>* An installed version of the following packages: Kademlia (Bmuller), python-twisted,mysql-connector-python, bluez (with related packages), bluepy, and libglib2.0-dev.</h4>
+
+<h4>
+<a id="for-more-installation-info-we-refer-to-the-individual-package-installation-info-sites-all-packages-except-bluepy-is-available-via-linux-apt-get-installation-and-a-sligthly-modified-version-of-bluepy-is-available-with-bluegate" class="anchor" href="#for-more-installation-info-we-refer-to-the-individual-package-installation-info-sites-all-packages-except-bluepy-is-available-via-linux-apt-get-installation-and-a-sligthly-modified-version-of-bluepy-is-available-with-bluegate" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>For more installation info, we refer to the individual package installation info sites. All packages except bluepy is available via Linux apt-get installation, and a sligthly modified version of bluepy is available with BlueGate.</h4>
+
+<h3>
+<a id="installation-and-usage" class="anchor" href="#installation-and-usage" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Installation and usage</h3>
+
+<h4>
+<a id="to-install-bluegate-clone-this-repository-make-sure-to-install-all-above-mentioned-packages-including-running-the-installation-for-bluepy-included-in-the-repository-for-installation-see-bluepy-documentation" class="anchor" href="#to-install-bluegate-clone-this-repository-make-sure-to-install-all-above-mentioned-packages-including-running-the-installation-for-bluepy-included-in-the-repository-for-installation-see-bluepy-documentation" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>To install BlueGate, clone this repository, make sure to install all above mentioned packages including running the installation for bluepy (included in the repository, for installation see bluepy documentation).</h4>
+
+<h4>
+<a id="to-start-bluegate-make-sure-you-have-a-kademlia-server-running-tested-on-bmullers-kademlia-stand-alone-test-server-open-__init__py-in-the-main-package-and-modify-the-global-variables-at-the-top-with-appropriate-information-gateway-id-kademlia-and-mysql-information-note-that-gateway-id-should-be-unique-for-each-gateway-connected-to-the-kademlia-networkmysql-database-finally-start-the-program-by-starting-__init__py-in-the-main-package-no-arguments" class="anchor" href="#to-start-bluegate-make-sure-you-have-a-kademlia-server-running-tested-on-bmullers-kademlia-stand-alone-test-server-open-__init__py-in-the-main-package-and-modify-the-global-variables-at-the-top-with-appropriate-information-gateway-id-kademlia-and-mysql-information-note-that-gateway-id-should-be-unique-for-each-gateway-connected-to-the-kademlia-networkmysql-database-finally-start-the-program-by-starting-__init__py-in-the-main-package-no-arguments" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>To start BlueGate, make sure you have a Kademlia server running (tested on Bmullers Kademlia stand-alone test server). Open __init__.py in the main package and modify the global variables at the top with appropriate information (Gateway ID, Kademlia and MySQL information). Note that Gateway ID should be unique for each gateway connected to the Kademlia network/MySQL database. Finally, start the program by starting __init__.py in the main package (no arguments).</h4>
+
+<h3>
+<a id="suggestions-for-further-developmentcurrent-issues" class="anchor" href="#suggestions-for-further-developmentcurrent-issues" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Suggestions for further development/current issues</h3>
+
+<h4>
+<a id="-lacking-documentation-comments-in-source-code-at-the-moment-instruction-protocol-described-by-functions-createinstruction" class="anchor" href="#-lacking-documentation-comments-in-source-code-at-the-moment-instruction-protocol-described-by-functions-createinstruction" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>* Lacking documentation (comments in source code at the moment, instruction protocol described by functions create...Instruction())</h4>
+
+<h4>
+<a id="-more-thorough-unit-testing-and-testing-of-the-system-for-larger-networks" class="anchor" href="#-more-thorough-unit-testing-and-testing-of-the-system-for-larger-networks" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>* More thorough unit testing, and testing of the system for larger networks</h4>
+
+<h4>
+<a id="-support-for-python3-and-possibly-multiple-platforms" class="anchor" href="#-support-for-python3-and-possibly-multiple-platforms" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>* Support for Python3, and possibly multiple platforms</h4>
+
+<h4>
+<a id="-further-development-of-the-instruction-protocol" class="anchor" href="#-further-development-of-the-instruction-protocol" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>* Further development of the instruction protocol</h4>
+
+<h4>
+<a id="-increased-usability-gui" class="anchor" href="#-increased-usability-gui" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>* Increased usability (GUI)</h4>
+
+<h4>
+<a id="-possibilities-to-act-based-on-data-read-from-sensors" class="anchor" href="#-possibilities-to-act-based-on-data-read-from-sensors" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>* Possibilities to act based on data read from sensors</h4>
+
+<h4>
+<a id="-possibility-to-update-values-uuidmajorminor-etc-in-the-sensors-separately-rather-then-all-at-once" class="anchor" href="#-possibility-to-update-values-uuidmajorminor-etc-in-the-sensors-separately-rather-then-all-at-once" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>* Possibility to update values (UUID,Major,Minor etc.) in the sensors separately, rather then all at once</h4>
+
+<h4>
+<a id="-application-programming-interface-api-for-the-gateway-class" class="anchor" href="#-application-programming-interface-api-for-the-gateway-class" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>* Application Programming Interface (API) for the gateway class</h4>
+
+<h4>
+<a id="-possibility-to-read-data-from-files-or-streams-rather-then-user-input" class="anchor" href="#-possibility-to-read-data-from-files-or-streams-rather-then-user-input" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>* Possibility to read data from files, or streams rather then user input</h4>
+
+<h4>
+<a id="-improve-the-logging-of-values-in-the-sensors" class="anchor" href="#-improve-the-logging-of-values-in-the-sensors" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>* Improve the logging of values in the sensors</h4>
+
+<h4>
+<a id="-web-interface" class="anchor" href="#-web-interface" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>* Web interface</h4>
+
+<h4>
+<a id="for-questions-regarding-bluegate-send-an-email-to-inital-authors-marcusstevelindgmailcom-or-kalleenberggmailcom" class="anchor" href="#for-questions-regarding-bluegate-send-an-email-to-inital-authors-marcusstevelindgmailcom-or-kalleenberggmailcom" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>For questions regarding BlueGate, send an email to inital authors <a href="mailto:marcus.stevelind@gmail.com">marcus.stevelind@gmail.com</a> or <a href="mailto:kalle.enberg@gmail.com">kalle.enberg@gmail.com</a>.</h4>
+      </section>
+    </div>
+
+    
+  </body>
+</html>
